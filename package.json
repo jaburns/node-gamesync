@@ -1,0 +1,26 @@
+{
+    "name": "node-lag-comp",
+    "version": "0.0.0"
+    "description": "Node.js lag compensation for javascript games",
+    "author": {
+        "name": "Jeremy Burns",
+        "email": "j@jaburns.net",
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jaburns/node-lag-comp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/jaburns/node-lag-comp/issues"
+    },
+    "license": {
+        "type": "MIT",
+        "url": "https://github.com/jaburns/node-lag-comp/blob/master/LICENSE"
+    },
+    "dependencies": {
+        "socket.io": "0.9.x"
+    },
+    "scripts": {
+        "start": "node server.js",
+    }
+}
