@@ -46,15 +46,56 @@ includeInThisContext (__dirname+"/game.js");
 
 // ------------------------------------------------------------------------------------------------
 
-io.sockets.on ("connection", function (socket)
-{
-    socket.on ("message", function (data) {
-        console.log (data);
-    });
+function GameRunner (socket) {
+    var state = game.init ();
+    var frameIndex = 0;
+    var clientSockets = [];
+
+    this.addClientSocket = function (socket) {
+        if (clientSockets.length >= 2) return false;
+        clientSockets.push (socket);
+        return true;
+    }
+
+    this.killClientSocket = function (socket) {
+        clientSockets.splice (clientSockets.indexOf (socket), 1);
+    }
+
+    function pushStateToClients () {
+        for (var i in clientSockets) {
+            clientSockets[i].volatile.json.send ({
+                state: state,
+                frame: frameIndex
+            });
+        }
+    }
+
+    setInterval (function() {
+        frameIndex++;
+        state = game.step ({players:[0,0]}, state);
+
+        if (frameIndex % 5 == 0) {
+            pushStateToClients ();
+        }
+    },
+    game.dt);
+}
+
+var gameRunner = new GameRunner ();
+
+io.sockets.on ("connection", function (socket) {
+    if (! gameRunner.addClientSocket (socket)) {
+        socket.json.send ({"error": "Too many players connected already!"});
+        return;
+    }
 
     socket.on ("disconnect", function() {
+        gameRunner.killClientSocket (socket);
     });
 
-    socket.volatile.json.send ({"lol":"pong"});
+    //socket.on ("message", function (data) {});
 });
+
+
+
 

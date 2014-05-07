@@ -71,14 +71,21 @@ function runGame () {
     var socket = io.connect (document.URL);
     var state = game.init ();
     var frameIndex = 0;
+    var gameStepInterval;
 
     socket.on ("connect", function () {
         socket.on ("message", function (data) {
-            console.log (data);
+            if (data.error) {
+                alert (data.error);
+            } else {
+                render (data.state);
+            }
         });
     });
 
-    setInterval (function() {
+    return; // temp abort, just render server state for now
+
+    gameStepInterval = setInterval (function() {
         var inp = {
             players: [
                 keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0,
