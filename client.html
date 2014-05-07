@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/game.js"></script>
+</head>
+<body>
+    <canvas id="paper" width="640" height="480" />
+</body>
+<script>
+"use strict";
+// ----- input ----------------------------------------------------------------
+
+var Key = { LEFT: 37, RIGHT: 39, UP: 36, DOWN: 38 };
+
+var keys = (function(){
+    var _keys = { dirty: false };
+
+    function isRelevant (key) {
+        for (var k in Key) {
+            if (Key[k] == key) return true;
+        }
+        return false;
+    }
+
+    window.onkeydown = function (e) {
+        if (! isRelevant (e.keyCode)) return;
+        _keys [e.keyCode] = true;
+        _keys.dirty = true;
+    }
+
+    window.onkeyup = function (e) {
+        if (! isRelevant (e.keyCode)) return;
+        delete _keys [e.keyCode];
+        _keys.dirty = true;
+    }
+
+    return _keys;
+})();
+
+// ----- view -----------------------------------------------------------------
+
+var render = (function(){
+    var ctx = document.getElementById("paper").getContext("2d");
+    var fg = "#FFF", bg = "#000";
+
+    function drawBall (ball) {
+        ctx.fillStyle = fg;
+        ctx.fillRect (320+320*ball.x-3,
+                      240+240*ball.y-3, 6, 6);
+    }
+
+    function drawPaddle (x, y) {
+        ctx.fillStyle = fg;
+        ctx.fillRect (320+320*x-32,
+                      240+240*y-3,64, 6);
+    }
+
+    return function (state) {
+        ctx.fillStyle = bg;
+        ctx.fillRect (0, 0, 640, 480);
+        drawBall (state.ball);
+        drawPaddle (state.paddles[0], -0.9);
+        drawPaddle (state.paddles[1],  0.9);
+    }
+})();
+
+// ----- net/state ------------------------------------------------------------
+
+function runGame () {
+    var socket = io.connect (document.URL);
+    var state = game.init ();
+    var frameIndex = 0;
+
+    socket.on ("connect", function () {
+        socket.on ("message", function (data) {
+            console.log (data);
+        });
+    });
+
+    setInterval (function() {
+        var inp = {
+            players: [
+                keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0,
+                keys[Key.UP]   ? -1 : keys[Key.DOWN]  ? 1 : 0
+            ]
+        };
+
+        frameIndex++;
+        state = game.step (inp, state);
+        render (state);
+
+        if (keys.dirty) {
+            socket.json.send ({input: inp, frame: frameIndex});
+            keys.dirty = false;
+        }
+    },
+    game.dt);
+}
+runGame ();
+
+// ----------------------------------------------------------------------------
+</script>
+</html>
