@@ -9,8 +9,9 @@ var game = (function () {
         };
     }
 
-    function stepper (input, state) {
-        return {
+    function stepper (input, state)
+    {
+        var ns = {
             paddles: [
                 state.paddles[0] + 0.05*input.players[0],
                 state.paddles[1] + 0.05*input.players[1]
@@ -22,12 +23,19 @@ var game = (function () {
                 vy: state.ball.vy
             }
         };
+
+        if (ns.ball.x < -1) ns.ball.vx =  Math.abs (ns.ball.vx);
+        if (ns.ball.x >  1) ns.ball.vx = -Math.abs (ns.ball.vx);
+        if (ns.ball.y < -1) ns.ball.vy =  Math.abs (ns.ball.vy);
+        if (ns.ball.y >  1) ns.ball.vy = -Math.abs (ns.ball.vy);
+
+        return ns;
     }
 
     return {
         init: getInitialState,
         step: stepper,
-        dt: 34
+        dt: 33
     };
 
 })();
