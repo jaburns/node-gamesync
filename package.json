@@ -1,10 +1,10 @@
 {
     "name": "node-lag-comp",
-    "version": "0.0.0"
+    "version": "0.0.0",
     "description": "Node.js lag compensation for javascript games",
     "author": {
         "name": "Jeremy Burns",
-        "email": "j@jaburns.net",
+        "email": "j@jaburns.net"
     },
     "repository": {
         "type": "git",
@@ -21,6 +21,6 @@
         "socket.io": "0.9.x"
     },
     "scripts": {
-        "start": "node server.js",
+        "start": "node server.js"
     }
 }
