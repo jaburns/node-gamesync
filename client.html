@@ -69,40 +69,34 @@ var render = (function(){
 
 function runGame () {
     var socket = io.connect (document.URL);
-    var state = game.init ();
-    var frameIndex = 0;
-    var gameStepInterval;
+
+    function slowSend (data) {
+        setTimeout (function () {
+            socket.json.send (data);
+        }, 50);
+    }
 
     socket.on ("connect", function () {
         socket.on ("message", function (data) {
             if (data.error) {
                 alert (data.error);
             } else {
+                var inp = {
+                    players: [
+                        keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0,
+                        keys[Key.UP]   ? -1 : keys[Key.DOWN]  ? 1 : 0
+                    ]
+                };
+
                 render (data.state);
+
+                if (keys.dirty) {
+                    slowSend ({input: inp, frame: data.frame});
+                    keys.dirty = false;
+                }
             }
         });
     });
-
-    return; // temp abort, just render server state for now
-
-    gameStepInterval = setInterval (function() {
-        var inp = {
-            players: [
-                keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0,
-                keys[Key.UP]   ? -1 : keys[Key.DOWN]  ? 1 : 0
-            ]
-        };
-
-        frameIndex++;
-        state = game.step (inp, state);
-        render (state);
-
-        if (keys.dirty) {
-            socket.json.send ({input: inp, frame: frameIndex});
-            keys.dirty = false;
-        }
-    },
-    game.dt);
 }
 runGame ();
 

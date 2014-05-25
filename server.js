@@ -73,10 +73,7 @@ function GameRunner (socket) {
     setInterval (function() {
         frameIndex++;
         state = game.step ({players:[0,0]}, state);
-
-        if (frameIndex % 5 == 0) {
-            pushStateToClients ();
-        }
+        pushStateToClients ();
     },
     game.dt);
 }
@@ -93,7 +90,9 @@ io.sockets.on ("connection", function (socket) {
         gameRunner.killClientSocket (socket);
     });
 
-    //socket.on ("message", function (data) {});
+    socket.on ("message", function (data) {
+        console.log (data);
+    });
 });
 
 
