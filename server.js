@@ -62,12 +62,15 @@ function GameRunner (socket) {
     }
 
     function pushStateToClients () {
-        for (var i in clientSockets) {
-            clientSockets[i].volatile.json.send ({
-                state: state,
-                frame: frameIndex
-            });
+        setTimeout (function () {
+            for (var i in clientSockets) {
+                clientSockets[i].volatile.json.send ({
+                    state: state,
+                    frame: frameIndex
+                });
+            }
         }
+        , 50);
     }
 
     setInterval (function() {
