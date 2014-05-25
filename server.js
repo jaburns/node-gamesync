@@ -61,6 +61,10 @@ function GameRunner (socket) {
         clientSockets.splice (clientSockets.indexOf (socket), 1);
     }
 
+    this.acceptInput = function (data) {
+        console.log (data.frame - frameIndex);
+    }
+
     function pushStateToClients () {
         setTimeout (function () {
             for (var i in clientSockets) {
@@ -94,7 +98,7 @@ io.sockets.on ("connection", function (socket) {
     });
 
     socket.on ("message", function (data) {
-        console.log (data);
+        gameRunner.acceptInput (data);
     });
 });
 
