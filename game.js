@@ -9,12 +9,12 @@ var game = (function () {
         };
     }
 
-    function stepper (input, state)
+    function stepper (inputs, state)
     {
         var ns = {
             paddles: [
-                state.paddles[0] + 0.05*input.players[0],
-                state.paddles[1] + 0.05*input.players[1]
+                state.paddles[0] + 0.05*inputs[0].paddle,
+                state.paddles[1] + 0.05*inputs[1].paddle
             ],
             ball: {
                  x: state.ball.x + state.ball.vx,

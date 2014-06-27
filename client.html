@@ -81,17 +81,15 @@ function runGame () {
             if (data.error) {
                 alert (data.error);
             } else {
-                var inp = {
-                    players: [
-                        keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0,
-                        keys[Key.UP]   ? -1 : keys[Key.DOWN]  ? 1 : 0
-                    ]
-                };
+                var inps = [
+                    {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0},
+                    {paddle: keys[Key.UP]   ? -1 : keys[Key.DOWN]  ? 1 : 0}
+                ];
 
                 render (data.state);
 
                 if (keys.dirty) {
-                    slowSend ({input: inp, frame: data.frame});
+                    slowSend ({inputs: inps, frame: data.frame});
                     keys.dirty = false;
                 }
             }

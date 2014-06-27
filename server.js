@@ -51,6 +51,8 @@ function GameRunner (socket) {
     var frameIndex = 0;
     var clientSockets = [];
 
+    var latestInput = [{paddle:0},{paddle:0}];
+
     this.addClientSocket = function (socket) {
         if (clientSockets.length >= 2) return false;
         clientSockets.push (socket);
@@ -62,6 +64,7 @@ function GameRunner (socket) {
     }
 
     this.acceptInput = function (data) {
+        latestInput = data;
         console.log (data.frame - frameIndex);
     }
 
@@ -79,7 +82,7 @@ function GameRunner (socket) {
 
     setInterval (function() {
         frameIndex++;
-        state = game.step ({players:[0,0]}, state);
+        state = game.step (latestInput, state);
         pushStateToClients ();
     },
     game.dt);
@@ -98,7 +101,7 @@ io.sockets.on ("connection", function (socket) {
     });
 
     socket.on ("message", function (data) {
-        gameRunner.acceptInput (data);
+        gameRunner.acceptInput (data.inputs);
     });
 });
 
