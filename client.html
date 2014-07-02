@@ -25,14 +25,18 @@ var keys = (function(){
 
     window.onkeydown = function (e) {
         if (! isRelevant (e.keyCode)) return;
-        _keys [e.keyCode] = true;
-        _keys.dirty = true;
+        if (! _keys [e.keyCode]) {
+            _keys [e.keyCode] = true;
+            _keys.dirty = true;
+        }
     }
 
     window.onkeyup = function (e) {
         if (! isRelevant (e.keyCode)) return;
-        delete _keys [e.keyCode];
-        _keys.dirty = true;
+        if (_keys [e.keyCode]) {
+            delete _keys [e.keyCode];
+            _keys.dirty = true;
+        }
     }
 
     return _keys;
