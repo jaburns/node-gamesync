@@ -9,9 +9,15 @@ var game = (function () {
         };
     }
 
+    function getDefaultInput () {
+        return {
+            paddle: 0
+        }
+    }
+
     function stepper (inputs, state)
     {
-        while (inputs.length < 2) inputs.push ({paddle: 0});
+        if (inputs.length < 2) return state;
 
         var ns = {
             paddles: [
@@ -36,6 +42,7 @@ var game = (function () {
 
     return {
         init: getInitialState,
+        defaultInput: getDefaultInput,
         step: stepper,
         dt: 33
     };
