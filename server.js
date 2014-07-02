@@ -46,26 +46,34 @@ includeInThisContext (__dirname+"/game.js");
 
 // ------------------------------------------------------------------------------------------------
 
-function GameRunner (socket)
+function GameRunner ()
 {
     var state = game.init ();
     var frameIndex = 0;
+
     var clientSockets = [];
     var inputs = [];
 
-    this.addClientSocket = function (socket) {
-        if (clientSockets.length >= 2) return false;
-        clientSockets.push (socket);
-        return true;
-    }
+    this.addClientSocket = function (socket)
+    {
+        if (clientSockets.length >= game.players) return null;
 
-    this.killClientSocket = function (socket) {
-        clientSockets.splice (clientSockets.indexOf (socket), 1);
-    }
+        var socketIndex = clientSockets.push (socket) - 1;
+        var inputIndex = inputs.push (game.defaultInput ()) - 1;
 
-    this.acceptInput = function (socket, frame, input) {
-        inputs [clientSockets.indexOf (socket)] = input;
-        console.log (frame - frameIndex);
+        var id = Math.random().toString().substr(2);
+
+        return {
+            acceptInput: function (frame, input) {
+                input.id = id;
+                console.log (JSON.stringify (inputs));
+                inputs [inputIndex] = input;
+            },
+            kill: function () {
+                clientSockets.splice (socketIndex, 1);
+                inputs.splice (inputIndex, 1);
+            }
+        }
     }
 
     function pushStateToClients () {
@@ -91,17 +99,19 @@ function GameRunner (socket)
 var gameRunner = new GameRunner ();
 
 io.sockets.on ("connection", function (socket) {
-    if (! gameRunner.addClientSocket (socket)) {
+    var client = gameRunner.addClientSocket (socket);
+
+    if (!client) {
         socket.json.send ({"error": "Too many players connected already!"});
         return;
     }
 
     socket.on ("disconnect", function () {
-        gameRunner.killClientSocket (socket);
+        client.kill ();
     });
 
     socket.on ("message", function (data) {
-        gameRunner.acceptInput (socket, data.frame, data.input);
+        client.acceptInput (data.frame, data.input);
     });
 });
 
