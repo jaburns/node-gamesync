@@ -77,7 +77,7 @@ function GameRunner (socket)
                 });
             }
         }
-        , 50);
+        , 100);
     }
 
     setInterval (function() {

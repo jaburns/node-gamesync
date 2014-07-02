@@ -77,7 +77,7 @@ function runGame () {
     function slowSend (data) {
         setTimeout (function () {
             socket.json.send (data);
-        }, 50);
+        }, 100);
     }
 
     socket.on ("connect", function () {
