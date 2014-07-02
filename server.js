@@ -115,7 +115,9 @@ function GameRunner ()
                 states[i-1] = {
                     state: game.step (states[i].inputs, states[i].state),
                     frame: states[i].frame + 1,
-                    inputs: states[i].inputs.slice() // assume no input changes here
+                    inputs: states[i].inputs.slice()
+                        // This is not properly integrating inputs that arrive before/after
+                        // It just assumes the oldest input carries all the way forwards.
                 };
                 i--;
             }
