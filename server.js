@@ -55,53 +55,88 @@ function GameRunner ()
     }];
 
     var clientSockets = [];
-    var latestInputs = [];
+    var oldestModifiedInput = -1;
 
     this.addClientSocket = function (socket)
     {
         if (clientSockets.length >= game.players) return null;
 
         var socketIndex = clientSockets.push (socket) - 1;
-        var inputIndex = latestInputs.push (game.defaultInput ()) - 1;
-
         var id = Math.random().toString().substr(2);
+
+        // TODO think through how to properly add new inputs to the system.
+        var firstInput = game.defaultInput ();
+        firstInput.id = id;
+        states[0].inputs.push (firstInput);
 
         return {
             acceptInput: function (frame, input) {
                 input.id = id;
-                console.log (JSON.stringify (latestInputs));
-                // TODO Look in states[] for .frame == frame and inject input with matching
-                // ID, then set flag saying "oldest modified input" and put the frame number.
-                // Now when the stepper interval executes again, it knows how far back to
-                // go to resimulate.
-                latestInputs [inputIndex] = input;
+                oldestModifiedInput = frame;
+
+                console.log ("Attempting input: " + JSON.stringify (input));
+                console.log ("Latest local frame: " + states[0].frame);
+                console.log ("Input happened at frame: " + frame);
+
+                for (var i = 0; i < states.length; ++i) {
+                    if (states[i].frame == frame) {
+                        for (var j = 0; j < states[i].inputs.length; ++j) {
+                            if (states[i].inputs[j].id === id) {
+                                states[i].inputs[j] = input;
+                                return;
+                            }
+                        }
+                        return;
+                    }
+                }
             },
             kill: function () {
                 clientSockets.splice (socketIndex, 1);
-                latestInputs.splice (inputIndex, 1);
+                // TODO think through how to remove input sources from the system
             }
         }
     }
 
     function pushToClients (data) {
-        setTimeout (function () {
+        //setTimeout (function () {
             for (var i in clientSockets) {
                 clientSockets[i].volatile.json.send (data);
             }
-        }
-        , 100);
+        //} , 100);
     }
 
     setInterval (function() {
-        states.unshift({
-            state: game.step (states[0].inputs, states[0].state),
-            frame: states[0]++,
-            inputs: latestInputs.slice()
-        });
+        if (oldestModifiedInput >= 0) {
+            for (var i = 0; i < states.length; ++i) {
+                if (states[i].frame == oldestModifiedInput) break;
+            }
+            // now i == index of state to start simulating back from
+            while (i > 0) {
+                states[i-1] = {
+                    state: game.step (states[i].inputs, states[i].state),
+                    frame: states[i].frame + 1,
+                    inputs: states[i].inputs.slice() // assume no input changes here
+                };
+                i--;
+            }
+            oldestModifiedInput = -1;
+        }
 
+        var oldState = states[0];
+        var newState = {
+            state: game.step (oldState.inputs, oldState.state),
+            frame: oldState.frame + 1,
+            inputs: oldState.inputs.slice() // assume no input changes here
+        };
+
+        states.unshift (newState);
         if (states.length > 100) states.pop ();
 
-        pushToClients (states[0]);
+        if (newState.frame % 60 === 0) {
+            console.log (JSON.stringify (newState));
+        }
+
+        pushToClients (newState);
     },
     game.dt);
 }
