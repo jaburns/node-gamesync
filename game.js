@@ -11,6 +11,8 @@ var game = (function () {
 
     function stepper (inputs, state)
     {
+        while (inputs.length < 2) inputs.push ({paddle: 0});
+
         var ns = {
             paddles: [
                 state.paddles[0] + 0.05*inputs[0].paddle,

@@ -11,7 +11,7 @@
 "use strict";
 // ----- input ----------------------------------------------------------------
 
-var Key = { LEFT: 37, RIGHT: 39, UP: 36, DOWN: 38 };
+var Key = { LEFT: 37, RIGHT: 39 };
 
 var keys = (function(){
     var _keys = { dirty: false };
@@ -81,15 +81,13 @@ function runGame () {
             if (data.error) {
                 alert (data.error);
             } else {
-                var inps = [
-                    {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0},
-                    {paddle: keys[Key.UP]   ? -1 : keys[Key.DOWN]  ? 1 : 0}
-                ];
-
                 render (data.state);
 
                 if (keys.dirty) {
-                    slowSend ({inputs: inps, frame: data.frame});
+                    slowSend ({
+                        input: {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0},
+                        frame: data.frame
+                    });
                     keys.dirty = false;
                 }
             }

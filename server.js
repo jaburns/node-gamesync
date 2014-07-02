@@ -7,7 +7,7 @@ var FILES = [ "/client.html", "/game.js" ];
 var app = require("http").createServer(handler);
 var io = require("socket.io").listen(app);
 var fs = require("fs");
-var vm = require('vm');
+var vm = require("vm");
 app.listen (PORT);
 
 io.set ("log level", 2);
@@ -46,12 +46,12 @@ includeInThisContext (__dirname+"/game.js");
 
 // ------------------------------------------------------------------------------------------------
 
-function GameRunner (socket) {
+function GameRunner (socket)
+{
     var state = game.init ();
     var frameIndex = 0;
     var clientSockets = [];
-
-    var latestInput = [{paddle:0},{paddle:0}];
+    var inputs = [];
 
     this.addClientSocket = function (socket) {
         if (clientSockets.length >= 2) return false;
@@ -63,9 +63,9 @@ function GameRunner (socket) {
         clientSockets.splice (clientSockets.indexOf (socket), 1);
     }
 
-    this.acceptInput = function (data) {
-        latestInput = data;
-        console.log (data.frame - frameIndex);
+    this.acceptInput = function (socket, frame, input) {
+        inputs [clientSockets.indexOf (socket)] = input;
+        console.log (frame - frameIndex);
     }
 
     function pushStateToClients () {
@@ -82,7 +82,7 @@ function GameRunner (socket) {
 
     setInterval (function() {
         frameIndex++;
-        state = game.step (latestInput, state);
+        state = game.step (inputs, state);
         pushStateToClients ();
     },
     game.dt);
@@ -96,12 +96,12 @@ io.sockets.on ("connection", function (socket) {
         return;
     }
 
-    socket.on ("disconnect", function() {
+    socket.on ("disconnect", function () {
         gameRunner.killClientSocket (socket);
     });
 
     socket.on ("message", function (data) {
-        gameRunner.acceptInput (data.inputs);
+        gameRunner.acceptInput (socket, data.frame, data.input);
     });
 });
 
