@@ -48,50 +48,60 @@ includeInThisContext (__dirname+"/game.js");
 
 function GameRunner ()
 {
-    var state = game.init ();
-    var frameIndex = 0;
+    var states = [{
+        state: game.init (),
+        frame: 0,
+        inputs: []
+    }];
 
     var clientSockets = [];
-    var inputs = [];
+    var latestInputs = [];
 
     this.addClientSocket = function (socket)
     {
         if (clientSockets.length >= game.players) return null;
 
         var socketIndex = clientSockets.push (socket) - 1;
-        var inputIndex = inputs.push (game.defaultInput ()) - 1;
+        var inputIndex = latestInputs.push (game.defaultInput ()) - 1;
 
         var id = Math.random().toString().substr(2);
 
         return {
             acceptInput: function (frame, input) {
                 input.id = id;
-                console.log (JSON.stringify (inputs));
-                inputs [inputIndex] = input;
+                console.log (JSON.stringify (latestInputs));
+                // TODO Look in states[] for .frame == frame and inject input with matching
+                // ID, then set flag saying "oldest modified input" and put the frame number.
+                // Now when the stepper interval executes again, it knows how far back to
+                // go to resimulate.
+                latestInputs [inputIndex] = input;
             },
             kill: function () {
                 clientSockets.splice (socketIndex, 1);
-                inputs.splice (inputIndex, 1);
+                latestInputs.splice (inputIndex, 1);
             }
         }
     }
 
-    function pushStateToClients () {
+    function pushToClients (data) {
         setTimeout (function () {
             for (var i in clientSockets) {
-                clientSockets[i].volatile.json.send ({
-                    state: state,
-                    frame: frameIndex
-                });
+                clientSockets[i].volatile.json.send (data);
             }
         }
         , 100);
     }
 
     setInterval (function() {
-        frameIndex++;
-        state = game.step (inputs, state);
-        pushStateToClients ();
+        states.unshift({
+            state: game.step (states[0].inputs, states[0].state),
+            frame: states[0]++,
+            inputs: latestInputs.slice()
+        });
+
+        if (states.length > 100) states.pop ();
+
+        pushToClients (states[0]);
     },
     game.dt);
 }
