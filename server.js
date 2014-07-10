@@ -69,6 +69,7 @@ function GameRunner ()
 
     var clientSockets = [];
     var oldestModifiedInput = -1;
+    var ackInputs = [];
 
     this.addClientSocket = function (socket)
     {
@@ -83,9 +84,10 @@ function GameRunner ()
         states[0].inputs.push (firstInput);
 
         return {
-            acceptInput: function (frame, input) {
+            acceptInput: function (ackId, frame, input) {
                 input.id = id;
                 oldestModifiedInput = frame;
+                ackInputs.push (ackId);
 
                 console.log ("Attempting input: " + JSON.stringify (input));
                 console.log ("Latest local frame: " + states[0].frame);
@@ -151,6 +153,11 @@ function GameRunner ()
             console.log (JSON.stringify (newState));
         }
 
+        if (ackInputs.length > 0) {
+            newState.ackInputs = ackInputs;
+            ackInputs = [];
+        }
+
         pushToClients (newState);
     },
     game.dt);
@@ -171,7 +178,7 @@ io.sockets.on ("connection", function (socket) {
     });
 
     socket.on ("message", function (data) {
-        client.acceptInput (data.frame, data.input);
+        client.acceptInput (data.ackId, data.frame, data.input);
     });
 });
 

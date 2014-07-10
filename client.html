@@ -80,6 +80,8 @@ function runGame () {
     //  }, 100);
     }
 
+    var lastInputAckId = null;
+
     socket.on ("connect", function () {
         socket.on ("message", function (data) {
             if (data.error) {
@@ -87,8 +89,16 @@ function runGame () {
             } else {
                 render (data.state);
 
+                if (lastInputAckId && data.ackInputs
+                && data.ackInputs.indexOf (lastInputAckId) >= 0) {
+                    console.log ("Server acked last input.");
+                    lastInputAckId = null;
+                }
+
                 if (keys.dirty) {
+                    lastInputAckId = Math.random().toString().substr(2);
                     slowSend ({
+                        ackId: lastInputAckId,
                         input: {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0},
                         frame: data.frame
                     });
