@@ -113,11 +113,11 @@ function GameRunner ()
     }
 
     function pushToClients (data) {
-        //setTimeout (function () {
+    //  setTimeout (function () {
             for (var i in clientSockets) {
                 clientSockets[i].volatile.json.send (data);
             }
-        //} , 100);
+    //  }, 100);
     }
 
     setInterval (function() {

@@ -75,9 +75,9 @@ function runGame () {
     var socket = io.connect (document.URL);
 
     function slowSend (data) {
-        setTimeout (function () {
+    //  setTimeout (function () {
             socket.json.send (data);
-        }, 100);
+    //  }, 100);
     }
 
     socket.on ("connect", function () {
