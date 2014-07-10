@@ -95,6 +95,11 @@ function runGame () {
                     lastInputAckId = null;
                 }
 
+              // if (lastInputAckId) { // if we're waiting on integrating our input on the server
+              //   render (predictionFrame.state);
+              //   predictionFrame = game.step ([latestInput + updatedStuffFromServer], state);
+              // }
+
                 if (keys.dirty) {
                     lastInputAckId = Math.random().toString().substr(2);
                     slowSend ({
@@ -103,6 +108,8 @@ function runGame () {
                         frame: data.frame
                     });
                     keys.dirty = false;
+
+                    // predictionFrame = game.step ([newInput + otherPlayersFromServer], state);
                 }
             }
         });
