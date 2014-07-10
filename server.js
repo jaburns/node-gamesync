@@ -82,11 +82,13 @@ function GameRunner ()
                     if (states[i].frame == frame) {
                         for (var j = 0; j < states[i].inputs.length; ++j) {
                             if (states[i].inputs[j].id === id) {
-                                states[i].inputs[j] = input;
+                                while (i >= 0) {
+                                    states[i].inputs[j] = input;
+                                    i--;
+                                }
                                 return;
                             }
                         }
-                        return;
                     }
                 }
             },
@@ -115,9 +117,7 @@ function GameRunner ()
                 states[i-1] = {
                     state: game.step (states[i].inputs, states[i].state),
                     frame: states[i].frame + 1,
-                    inputs: states[i].inputs.slice()
-                        // This is not properly integrating inputs that arrive before/after
-                        // It just assumes the oldest input carries all the way forwards.
+                    inputs: states[i-1].inputs
                 };
                 i--;
             }
