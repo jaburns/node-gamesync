@@ -45,24 +45,27 @@ var keys = (function(){
 // ----- view -----------------------------------------------------------------
 
 var render = (function(){
+    var WIDTH = 600, HEIGHT = 300;
+    var WIDTH2 = WIDTH/2, HEIGHT2 = HEIGHT/2;
+
     var ctx = document.getElementById("paper").getContext("2d");
     var fg = "#FFF", bg = "#000";
 
     function drawBall (ball) {
         ctx.fillStyle = fg;
-        ctx.fillRect (320+320*ball.x-3,
-                      240+240*ball.y-3, 6, 6);
+        ctx.fillRect (WIDTH2+WIDTH2*ball.x-3,
+                      HEIGHT2+HEIGHT2*ball.y-3, 6, 6);
     }
 
     function drawPaddle (x, y) {
         ctx.fillStyle = fg;
-        ctx.fillRect (320+320*x-32,
-                      240+240*y-3,64, 6);
+        ctx.fillRect (WIDTH2+WIDTH2*x-32,
+                      HEIGHT2+HEIGHT2*y-3,64, 6);
     }
 
     return function (state) {
         ctx.fillStyle = bg;
-        ctx.fillRect (0, 0, 640, 480);
+        ctx.fillRect (0, 0, WIDTH, HEIGHT);
         drawBall (state.ball);
         drawPaddle (state.paddles[0], -0.9);
         drawPaddle (state.paddles[1],  0.9);
