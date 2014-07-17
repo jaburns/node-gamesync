@@ -1,17 +1,4 @@
 
-    /**
-     * CURRENT ISSUE:
-     *
-     * The game assumes the key is being held for a while, predicts the game, so the
-     * paddle moves ahead of where it should be.  Then when the key release is sent
-     * and the game resimulated, the paddle lands where it's actually supposed to be.
-     *
-     * This is exactly what should happen, it seem jarring when ping from client to
-     * server is high and there is no client-side prediction to smooth it out.
-     *
-     * TODO: Client side prediction
-     */
-
 "use strict";
 
 var PORT = 1234;
