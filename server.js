@@ -84,6 +84,7 @@ function GameRunner ()
         states[0].inputs.push (firstInput);
 
         return {
+            inputId: id,
             acceptInput: function (ackId, frame, input) {
                 input.id = id;
                 oldestModifiedInput = frame;
@@ -172,6 +173,8 @@ io.sockets.on ("connection", function (socket) {
         socket.json.send ({"error": "Too many players connected already!"});
         return;
     }
+
+    socket.json.send ({"notifyInputId": client.inputId});
 
     socket.on ("disconnect", function () {
         client.kill ();

@@ -74,6 +74,7 @@ var render = (function(){
 
 // ----- net/state ------------------------------------------------------------
 
+
 function runGame () {
     var socket = io.connect (document.URL);
 
@@ -83,37 +84,65 @@ function runGame () {
     //  }, 100);
     }
 
+    var inputId = null;
+
+    var predictionFrame = null;
     var lastInputAckId = null;
+    var lastNewInput = null;
+
+    function combineInputs (all, local) {
+        for (var i = 0; i < all.length ; ++i) {
+            if (all[i].id === local.id) {
+                all[i] = local;
+                break;
+            }
+        }
+        return all;
+    }
 
     socket.on ("connect", function () {
         socket.on ("message", function (data) {
             if (data.error) {
                 alert (data.error);
+                return;
+            }
+            if (data.notifyInputId) {
+                inputId = data.notifyInputId;
+                return;
+            }
+
+            if (lastInputAckId && data.ackInputs
+            && data.ackInputs.indexOf (lastInputAckId) >= 0) {
+                console.log ("Server acked last input.");
+                predictionFrame = null;
+                lastInputAckId = null;
+                lastNewInput = null;
+            }
+
+            if (predictionFrame) {
+                render (predictionFrame);
             } else {
                 render (data.state);
+            }
 
-                if (lastInputAckId && data.ackInputs
-                && data.ackInputs.indexOf (lastInputAckId) >= 0) {
-                    console.log ("Server acked last input.");
-                    lastInputAckId = null;
-                }
+            if (keys.dirty) {
+                lastNewInput = {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0};
+                lastNewInput.id = inputId;
+                lastInputAckId = Math.random().toString().substr(2);
 
-              // if (lastInputAckId) { // if we're waiting on integrating our input on the server
-              //   render (predictionFrame.state);
-              //   predictionFrame = game.step ([latestInput + updatedStuffFromServer], state);
-              // }
+                slowSend ({
+                    ackId: lastInputAckId,
+                    input: lastNewInput,
+                    frame: data.frame
+                });
+                keys.dirty = false;
 
-                if (keys.dirty) {
-                    lastInputAckId = Math.random().toString().substr(2);
-                    slowSend ({
-                        ackId: lastInputAckId,
-                        input: {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0},
-                        frame: data.frame
-                    });
-                    keys.dirty = false;
-
-                    // predictionFrame = game.step ([newInput + otherPlayersFromServer], state);
-                }
+                predictionFrame = game.step (combineInputs (data.inputs, lastNewInput),
+                    predictionFrame ? predictionFrame : data.state);
+            }
+            else if (predictionFrame) {
+                predictionFrame = game.step (combineInputs (data.inputs, lastNewInput),
+                    predictionFrame);
             }
         });
     });
