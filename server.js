@@ -59,6 +59,11 @@ includeInThisContext (__dirname+"/game.js");
 
 // ------------------------------------------------------------------------------------------------
 
+var DEBUG_LAG = 0;
+if (process.argv.length > 2) {
+    DEBUG_LAG = parseInt (process.argv[2]);
+}
+
 function GameRunner ()
 {
     var states = [{
@@ -116,11 +121,16 @@ function GameRunner ()
     }
 
     function pushToClients (data) {
-    //  setTimeout (function () {
+        var doPush = function() {
             for (var i in clientSockets) {
                 clientSockets[i].volatile.json.send (data);
             }
-    //  }, 100);
+        }
+        if (DEBUG_LAG > 0) {
+            setTimeout (doPush, DEBUG_LAG);
+        } else {
+            doPush ();
+        }
     }
 
     setInterval (function() {
