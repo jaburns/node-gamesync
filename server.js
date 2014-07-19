@@ -2,7 +2,7 @@
 "use strict";
 
 var PORT = 1234;
-var FILES = [ "/client.html", "/game.js" ];
+var FILES = [ "/client.html", "/client.js", "/game.js" ];
 
 var app = require("http").createServer(handler);
 var io = require("socket.io").listen(app);
@@ -141,7 +141,7 @@ function GameRunner ()
         var newState = {
             state: game.step (oldState.inputs, oldState.state),
             frame: oldState.frame + 1,
-            inputs: oldState.inputs.slice() // assume no input changes here
+            inputs: oldState.inputs.slice()
         };
 
         states.unshift (newState);
