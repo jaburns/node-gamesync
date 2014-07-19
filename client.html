@@ -11,9 +11,8 @@
 "use strict";
 // ----- input ----------------------------------------------------------------
 
-var Key = { LEFT: 37, RIGHT: 39 };
-
-var keys = (function(){
+var getInput = (function(){
+    var Key = { LEFT: 37, RIGHT: 39 };
     var _keys = { dirty: false };
 
     function isRelevant (key) {
@@ -39,7 +38,14 @@ var keys = (function(){
         }
     }
 
-    return _keys;
+    return function () {
+        console.log (_keys.dirty);
+        if (_keys.dirty) {
+            _keys.dirty = false;
+            return {paddle: _keys[Key.LEFT] ? -1 : _keys[Key.RIGHT] ? 1 : 0};
+        }
+        return null;
+    }
 })();
 
 // ----- view -----------------------------------------------------------------
@@ -113,7 +119,6 @@ function runGame () {
 
             if (lastInputAckId && data.ackInputs
             && data.ackInputs.indexOf (lastInputAckId) >= 0) {
-                console.log ("Server acked last input.");
                 predictionFrame = null;
                 lastInputAckId = null;
                 lastNewInput = null;
@@ -125,8 +130,10 @@ function runGame () {
                 render (data.state);
             }
 
-            if (keys.dirty) {
-                lastNewInput = {paddle: keys[Key.LEFT] ? -1 : keys[Key.RIGHT] ? 1 : 0};
+            var readInput = getInput ();
+
+            if (readInput) {
+                lastNewInput = readInput;
                 lastNewInput.id = inputId;
                 lastInputAckId = Math.random().toString().substr(2);
 
@@ -135,7 +142,6 @@ function runGame () {
                     input: lastNewInput,
                     frame: data.frame
                 });
-                keys.dirty = false;
 
                 predictionFrame = game.step (combineInputs (data.inputs, lastNewInput),
                     predictionFrame ? predictionFrame : data.state);
