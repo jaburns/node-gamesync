@@ -40,7 +40,6 @@ var getInput = (function(){
     }
 
     return function () {
-        console.log (_keys.dirty);
         if (_keys.dirty) {
             _keys.dirty = false;
             return {paddle: _keys[Key.LEFT] ? -1 : _keys[Key.RIGHT] ? 1 : 0};
