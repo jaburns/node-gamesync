@@ -1,5 +1,7 @@
 
 function runGame (render, getInput) {
+    "use strict"
+
     var socket = io.connect (document.URL);
 
     var inputId = null;
