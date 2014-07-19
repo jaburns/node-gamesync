@@ -13,36 +13,33 @@
 // ----- input ----------------------------------------------------------------
 
 var getInput = (function(){
-    var Key = { LEFT: 37, RIGHT: 39 };
-    var _keys = { dirty: false };
-
-    function isRelevant (key) {
-        for (var k in Key) {
-            if (Key[k] == key) return true;
-        }
-        return false;
-    }
+    var keyCodes = { left: 37, right: 39 };
+    var keys = {};
+    var dirty = false;
 
     window.onkeydown = function (e) {
-        if (! isRelevant (e.keyCode)) return;
-        if (! _keys [e.keyCode]) {
-            _keys [e.keyCode] = true;
-            _keys.dirty = true;
+        if (! e.keyCode in keyCodes) return;
+        if (! keys [e.keyCode]) {
+            keys [e.keyCode] = true;
+            dirty = true;
         }
     }
 
     window.onkeyup = function (e) {
-        if (! isRelevant (e.keyCode)) return;
-        if (_keys [e.keyCode]) {
-            delete _keys [e.keyCode];
-            _keys.dirty = true;
+        if (! e.keyCode in keyCodes) return;
+        if (keys [e.keyCode]) {
+            delete keys [e.keyCode];
+            dirty = true;
         }
     }
 
     return function () {
-        if (_keys.dirty) {
-            _keys.dirty = false;
-            return {paddle: _keys[Key.LEFT] ? -1 : _keys[Key.RIGHT] ? 1 : 0};
+        if (dirty) {
+            dirty = false;
+            return { paddle:
+                  keys[keyCodes.left] ? -1
+                : keys[keyCodes.right] ? 1
+                : 0 };
         }
         return null;
     }
