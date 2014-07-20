@@ -48,3 +48,5 @@ var game = (function () {
     };
 
 })();
+
+if (typeof exports !== "undefined") exports.game = game;

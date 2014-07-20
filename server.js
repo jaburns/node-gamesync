@@ -8,6 +8,7 @@ var app = require("http").createServer(handler);
 var io = require("socket.io").listen(app);
 var fs = require("fs");
 var vm = require("vm");
+var game = require("./game").game;
 app.listen (PORT);
 
 io.set ("log level", 2);
@@ -34,15 +35,6 @@ function handler (req, res)
         }
     );
 }
-
-// ------------------------------------------------------------------------------------------------
-
-var includeInThisContext = function (path) {
-    var code = fs.readFileSync (path);
-    vm.runInThisContext (code, path);
-}.bind (this);
-
-includeInThisContext (__dirname+"/game.js");
 
 // ------------------------------------------------------------------------------------------------
 
@@ -87,7 +79,7 @@ function GameRunner ()
                 console.log ("Input happened at frame: " + frame);
 
                 for (var i = 0; i < states.length; ++i) {
-                    if (states[i].frame == frame) {
+                    if (states[i].frame === frame) {
                         for (var j = 0; j < states[i].inputs.length; ++j) {
                             if (states[i].inputs[j].id === id) {
                                 while (i >= 0) {
@@ -123,7 +115,7 @@ function GameRunner ()
     setInterval (function() {
         if (oldestModifiedInput >= 0) {
             for (var i = 0; i < states.length; ++i) {
-                if (states[i].frame == oldestModifiedInput) break;
+                if (states[i].frame === oldestModifiedInput) break;
             }
             // now i == index of state to start simulating back from
             while (i > 0) {
