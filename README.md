@@ -8,8 +8,7 @@ Quick and dirty demo:
 git clone https://github.com/jaburns/node-gamesync
 cd node-gamesync
 npm install
-cd example
-node app 200 &  # Simulate 200 ms latency on messages returning from server.
+node example/app 200 &  # Simulate 200 ms latency on messages returning from server.
 open localhost:1234
-open localhost:1234
+!!
 ```
