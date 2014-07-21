@@ -7,8 +7,7 @@ var lag = process.argv.length > 2
         ? parseInt (process.argv[2])
         : 0;
 
-var app = require ('http').createServer (handler);
-var io = require ('socket.io').listen (app);
+var server = require ('http').createServer (handler);
 var fs = require ('fs');
 
 function handler (req, res) {
@@ -32,7 +31,5 @@ function handler (req, res) {
 }
 
 var game = require ('./pong');
-require ('..').run (io, game, lag);
-
-io.set ('log level', 2);
-app.listen (PORT);
+require ('..').run (server, game, lag);
+server.listen (PORT);

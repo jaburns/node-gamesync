@@ -6,6 +6,7 @@ var CLIENT_SCRIPT_URL = '/gamesync/client.js'
 // ----------------------------------------------------------------------------
 
 var clientScript = require('fs').readFileSync(__dirname+CLIENT_SCRIPT_PATH).toString();
+var socketio = require('socket.io');
 var GameRunner = require('./gamerunner');
 
 function addPriorityRequestListener (server, url, listener) {
@@ -24,10 +25,13 @@ function addPriorityRequestListener (server, url, listener) {
   });
 }
 
-module.exports.run = function (io, game, lag) {
+module.exports.run = function (server, game, lag) {
   if (typeof lag === 'undefined') lag = 0;
 
-  addPriorityRequestListener (io.server, CLIENT_SCRIPT_URL, function (req, res) {
+  var io = socketio.listen (server);
+  io.set ('log level', 2);
+
+  addPriorityRequestListener (server, CLIENT_SCRIPT_URL, function (req, res) {
     res.writeHead (200);
     res.end (clientScript);
   });
