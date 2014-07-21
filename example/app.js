@@ -10,8 +10,6 @@ var lag = process.argv.length > 2
 var app = require ('http').createServer (handler);
 var io = require ('socket.io').listen (app);
 var fs = require ('fs');
-var game = require ('./pong');
-var gamesync = require ('..').run (io, game, lag);
 
 function handler (req, res) {
   var filepath = req.url;
@@ -33,6 +31,8 @@ function handler (req, res) {
   });
 }
 
+var game = require ('./pong');
+require ('..').run (io, game, lag);
+
 io.set ('log level', 2);
 app.listen (PORT);
-
