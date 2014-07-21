@@ -51,30 +51,30 @@ var game = (function () {
 
     var scored = false;
     if (ns.ball.y < -1) {
-        ns.score[0]++;
-        scored = true;
+      ns.score[0]++;
+      scored = true;
     }
     else if (ns.ball.y > 1) {
-        ns.score[1]++;
-        scored = true;
+      ns.score[1]++;
+      scored = true;
     }
     if (scored) {
-        ns.ball.x = ns.ball.y = 0;
+      ns.ball.x = ns.ball.y = 0;
     }
 
     if (ns.ball.vy > 0 && state.ball.y < 0.9 && ns.ball.y >= 0.9) {
-        var dx = ns.ball.x - ns.paddles[1];
-        if (Math.abs (dx) < 0.1) {
-            ns.ball.vx = 0.05*(dx/0.1);
-            ns.ball.vy = -Math.abs (ns.ball.vy);
-        }
+      var dx = ns.ball.x - ns.paddles[1];
+      if (Math.abs (dx) < 0.1) {
+        ns.ball.vx = 0.05*(dx/0.1);
+        ns.ball.vy = -Math.abs (ns.ball.vy);
+      }
     }
     else if (ns.ball.vy < 0 && state.ball.y > -0.9 && ns.ball.y <= -0.9) {
-        var dx = ns.ball.x - ns.paddles[0];
-        if (Math.abs (dx) < 0.1) {
-            ns.ball.vx = 0.05*(dx/0.1);
-            ns.ball.vy = Math.abs (ns.ball.vy);
-        }
+      var dx = ns.ball.x - ns.paddles[0];
+      if (Math.abs (dx) < 0.1) {
+        ns.ball.vx = 0.05*(dx/0.1);
+        ns.ball.vy = Math.abs (ns.ball.vy);
+      }
     }
 
     return ns;
