@@ -54,13 +54,11 @@ function runGame (game, render, getInput) {
           input: lastNewInput,
           frame: data.frame
         });
-
+      }
+      
+      if (readInput || predictionFrame) {
         predictionFrame = game.step (combineInputs (data.inputs, lastNewInput),
           predictionFrame ? predictionFrame : data.state);
-      }
-      else if (predictionFrame) {
-        predictionFrame = game.step (combineInputs (data.inputs, lastNewInput),
-          predictionFrame);
       }
     });
   });
