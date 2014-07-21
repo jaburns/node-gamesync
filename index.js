@@ -29,7 +29,7 @@ module.exports.run = function (io, game, lag) {
 
   addPriorityRequestListener (io.server, CLIENT_SCRIPT_URL, function (req, res) {
     res.writeHead (200);
-    res.end (clientJS);
+    res.end (clientScript);
   });
 
   var gameRunner = new GameRunner (game, lag);
