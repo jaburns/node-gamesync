@@ -11,7 +11,7 @@ var lag = process.argv.length > 2
 var app = require ("http").createServer (handler);
 var io = require ("socket.io").listen (app);
 var fs = require ("fs");
-var game = require ("./pong").game;
+var game = require ("./pong");
 var gamesync = require ("../gamesync").run (io, game, lag);
 
 function handler (req, res) {

@@ -46,7 +46,6 @@ var game = (function () {
         step: stepper,
         dt: 33
     };
-
 })();
 
-if (typeof exports !== "undefined") exports.game = game;
+if (typeof module !== "undefined") module.exports = game;
