@@ -85,8 +85,6 @@ GameRunner.prototype._step = function () {
 }
 
 GameRunner.prototype._sendState = function (state) {
-  console.log (state);
-  console.log (this._clientSockets.length);
   for (var i = 0; i < this._clientSockets.length; ++i) {
     this._clientSockets[i].volatile.json.send (state);
   }
@@ -103,9 +101,6 @@ ConnectedClient.prototype.acceptInput = function (ackId, frame, input) {
   this._runner._oldestModifiedInput = frame;
   this._runner._ackInputs.push (ackId);
   input.id = this._inputId;
-
-  console.log ("accepted input");
-  console.log (this._runner._states[0].frame);
 
   var states = this._runner._states;
 
