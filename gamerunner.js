@@ -48,6 +48,10 @@ GameRunner.prototype.addClientSocket = function (socket) {
   return new ConnectedClient (this, firstInput.id);
 }
 
+function jsonClone (obj) {
+  return JSON.parse (JSON.stringify (obj));
+}
+
 GameRunner.prototype._step = function () {
   if (this._oldestModifiedInput >= 0) {
     for (var i = 0; i < this._states.length; ++i) {
@@ -55,7 +59,7 @@ GameRunner.prototype._step = function () {
     }
     while (i > 0) {
       this._states[i-1] = {
-        state: this._game.step (this._states[i].inputs, this._states[i].state),
+        state: this._game.step (this._states[i].inputs, jsonClone (this._states[i].state)),
         frame: this._states[i].frame + 1,
         inputs: this._states[i-1].inputs
       };
@@ -66,7 +70,7 @@ GameRunner.prototype._step = function () {
 
   var oldState = this._states[0];
   var newState = {
-    state: this._game.step (oldState.inputs, oldState.state),
+    state: this._game.step (oldState.inputs, jsonClone (oldState.state)),
     frame: oldState.frame + 1,
     inputs: oldState.inputs.slice()
   };
