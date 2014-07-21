@@ -17,8 +17,8 @@ function runGame (game, render, getInput) {
         return all;
     }
 
-    socket.on ("connect", function () {
-        socket.on ("message", function (data) {
+    socket.on ('connect', function () {
+        socket.on ('message', function (data) {
             if (data.error) {
                 alert (data.error);
                 return;

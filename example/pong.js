@@ -1,6 +1,6 @@
 
 var game = (function () {
-    "use strict";
+    'use strict';
 
     function getInitialState () {
         return {
@@ -49,4 +49,4 @@ var game = (function () {
     };
 })();
 
-if (typeof module !== "undefined") module.exports = game;
+if (typeof module !== 'undefined') module.exports = game;

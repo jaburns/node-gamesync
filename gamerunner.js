@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var MAX_STATES = 100;
 
@@ -6,7 +6,7 @@ var MAX_STATES = 100;
 
 function GameRunner (game, lag) {
   this._game = game;
-  this._lag = typeof lag === "number" ? lag : 0;
+  this._lag = typeof lag === 'number' ? lag : 0;
 
   this._states = [{
     state: game.init (),
