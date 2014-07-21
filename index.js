@@ -17,8 +17,6 @@ exports.run = function (io, game, lag)
 {
     if (typeof lag === "undefined") lag = 0;
 
-    console.log ("RUNNING GAME");
-
     var oldListeners = io.server.listeners('request').splice(0);
     io.server.removeAllListeners('request');
 

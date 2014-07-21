@@ -12,7 +12,7 @@ var app = require ("http").createServer (handler);
 var io = require ("socket.io").listen (app);
 var fs = require ("fs");
 var game = require ("./pong");
-var gamesync = require ("../gamesync").run (io, game, lag);
+var gamesync = require ("..").run (io, game, lag);
 
 function handler (req, res) {
     var filepath = req.url;
