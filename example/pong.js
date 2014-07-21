@@ -44,7 +44,8 @@ var game = (function () {
         init: getInitialState,
         defaultInput: getDefaultInput,
         step: stepper,
-        dt: 33
+        dt: 33,
+        players: 2
     };
 })();
 
