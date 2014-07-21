@@ -52,7 +52,7 @@ GameRunner.prototype._step = function () {
       if (this._states[i].frame === this._oldestModifiedInput) break;
     }
     while (i > 0) {
-      states[i-1] = {
+      this._states[i-1] = {
         state: this._game.step (this._states[i].inputs, this._states[i].state),
         frame: this._states[i].frame + 1,
         inputs: this._states[i-1].inputs
@@ -78,7 +78,7 @@ GameRunner.prototype._step = function () {
   if (this._states.length > MAX_STATES) this._states.pop ();
 
   if (this._lag) {
-    setTimeout (function(){ this._sendState (newState); }, this._lag);
+    setTimeout (function(){ this._sendState (newState); }.bind(this), this._lag);
   } else {
     this._sendState (newState);
   }
