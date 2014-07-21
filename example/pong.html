@@ -14,66 +14,66 @@
 // ----- input ----------------------------------------------------------------
 
 var getInput = (function(){
-    var keyCodes = { left: 37, right: 39 };
-    var keys = {};
-    var dirty = false;
+  var keyCodes = { left: 37, right: 39 };
+  var keys = {};
+  var dirty = false;
 
-    window.onkeydown = function (e) {
-        if (! e.keyCode in keyCodes) return;
-        if (! keys [e.keyCode]) {
-            keys [e.keyCode] = true;
-            dirty = true;
-        }
+  window.onkeydown = function (e) {
+    if (! e.keyCode in keyCodes) return;
+    if (! keys [e.keyCode]) {
+      keys [e.keyCode] = true;
+      dirty = true;
     }
+  }
 
-    window.onkeyup = function (e) {
-        if (! e.keyCode in keyCodes) return;
-        if (keys [e.keyCode]) {
-            delete keys [e.keyCode];
-            dirty = true;
-        }
+  window.onkeyup = function (e) {
+    if (! e.keyCode in keyCodes) return;
+    if (keys [e.keyCode]) {
+      delete keys [e.keyCode];
+      dirty = true;
     }
+  }
 
-    return function () {
-        if (dirty) {
-            dirty = false;
-            return { paddle:
-                  keys[keyCodes.left] ? -1
-                : keys[keyCodes.right] ? 1
-                : 0 };
-        }
-        return null;
+  return function () {
+    if (dirty) {
+      dirty = false;
+      return { paddle:
+          keys[keyCodes.left] ? -1
+        : keys[keyCodes.right] ? 1
+        : 0 };
     }
+    return null;
+  }
 })();
 
 // ----- view -----------------------------------------------------------------
 
 var render = (function(){
-    var WIDTH = 600, HEIGHT = 300;
-    var WIDTH2 = WIDTH/2, HEIGHT2 = HEIGHT/2;
+  var WIDTH = 600, HEIGHT = 300;
+  var WIDTH2 = WIDTH/2, HEIGHT2 = HEIGHT/2;
 
-    var ctx = document.getElementById('paper').getContext('2d');
-    var fg = '#FFF', bg = '#000';
+  var ctx = document.getElementById('paper').getContext('2d');
+  var fg = '#FFF', bg = '#000';
 
-    function drawBall (ball) {
-        ctx.fillStyle = fg;
-        ctx.fillRect (WIDTH2+WIDTH2*ball.x-3,
-                      HEIGHT2+HEIGHT2*ball.y-3, 6, 6);
-    }
+  function drawBall (ball) {
+    ctx.fillStyle = fg;
+    ctx.fillRect (WIDTH2+WIDTH2*ball.x-3,
+                  HEIGHT2+HEIGHT2*ball.y-3, 6, 6);
+  }
 
-    function drawPaddle (x, y) {
-        ctx.fillStyle = fg;
-        ctx.fillRect (WIDTH2+WIDTH2*x-32,
-                      HEIGHT2+HEIGHT2*y-3,64, 6);
-    }
+  function drawPaddle (x, y) {
+    ctx.fillStyle = fg;
+    ctx.fillRect (WIDTH2+WIDTH2*x-32,
+                  HEIGHT2+HEIGHT2*y-3,64, 6);
+  }
 
-    return function (state) {
-        ctx.fillStyle = bg;
-        ctx.fillRect (0, 0, WIDTH, HEIGHT);
-        drawBall (state.ball);
-        drawPaddle (state.paddles[0], -0.9);
-        drawPaddle (state.paddles[1],  0.9);
-    }
+  return function (state) {
+    ctx.fillStyle = bg;
+    ctx.fillRect (0, 0, WIDTH, HEIGHT);
+    drawBall (state.ball);
+    drawPaddle (state.paddles[0], -0.9);
+    drawPaddle (state.paddles[1],  0.9);
+  }
 })();
 
 // ----------------------------------------------------------------------------
