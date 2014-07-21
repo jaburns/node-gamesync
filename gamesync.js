@@ -1,9 +1,38 @@
 
 "use strict";
 
+var fs = require("fs");
+
+var clientJS;
+
+fs.readFile (__dirname+"/gamesync-client.js", function (err, data) {
+    if (err) {
+        console.log ("Could not find gamesync-client.js");
+        process.exit (1);
+    }
+    clientJS = data;
+});
+
 exports.run = function (io, game, lag)
 {
     if (typeof lag === "undefined") lag = 0;
+
+    console.log ("RUNNING GAME");
+
+    var oldListeners = io.server.listeners('request').splice(0);
+    io.server.removeAllListeners('request');
+
+    io.server.on("request", function (req, res) {
+        if (req.url === "/gamesync/client.js") {
+            res.writeHead (200);
+            res.end (clientJS);
+        }
+        else {
+            for (var i=0, l=oldListeners.length; i < l; i++) {
+                oldListeners[i].call (io.server, req, res);
+            }
+        }
+    });
 
     function GameRunner ()
     {
