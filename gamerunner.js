@@ -43,6 +43,8 @@ GameRunner.prototype.addClientSocket = function (socket) {
     this._stepInterval = setInterval (this._step.bind(this), this._game.dt);
   }
 
+  socket.json.send ({'notifyInputId': firstInput.id});
+
   return new ConnectedClient (this, firstInput.id);
 }
 

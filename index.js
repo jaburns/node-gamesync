@@ -42,8 +42,6 @@ module.exports.run = function (io, game, lag) {
       return;
     }
 
-    socket.json.send ({'notifyInputId': client.inputId});
-
     socket.on ('disconnect', function () {
       gameRunner.removeClientSocket (socket);
     });
