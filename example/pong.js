@@ -35,7 +35,7 @@ var game = (function () {
         state.paddles[0] + 0.05*inputs[0].paddle,
         state.paddles[1] + 0.05*inputs[1].paddle
       ],
-      score: state.score.slice(),
+      score: state.score,
       ball: {
          x: state.ball.x + state.ball.vx,
          y: state.ball.y + state.ball.vy,
