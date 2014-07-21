@@ -2,12 +2,12 @@
 "use strict";
 
 var PORT = 1234;
-var FILES = [ "/client.html", "/gamesync-client.js", "/game.js" ];
+var FILES = [ "/pong.html", "/gamesync-client.js", "/pong.js" ];
 
 var app = require("http").createServer(handler);
 var io = require("socket.io").listen(app);
 var fs = require("fs");
-var game = require("./game").game;
+var game = require("./pong").game;
 var gamesync = require("../gamesync");
 app.listen (PORT);
 
