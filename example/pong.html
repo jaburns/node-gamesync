@@ -18,20 +18,39 @@ var getInput = (function(){
   var keyCodes = { left: 37, right: 39 };
   var keys = {};
   var dirty = false;
+  var randPressing = false;
 
-  window.onkeydown = function (e) {
-    if (! e.keyCode in keyCodes) return;
-    if (! keys [e.keyCode]) {
-      keys [e.keyCode] = true;
+  function randSwitchInput () {
+    if (randPressing) {
+      randPressing = false;
+      keys = {};
+      dirty = true;
+    } else {
+      randPressing = true;
+      keys[Math.random() > 0.5 ? keyCodes.left : keyCodes.right] = true;
       dirty = true;
     }
+    setTimeout (randSwitchInput, 100+Math.random(Math.random()*900));
   }
 
-  window.onkeyup = function (e) {
-    if (! e.keyCode in keyCodes) return;
-    if (keys [e.keyCode]) {
-      delete keys [e.keyCode];
-      dirty = true;
+  if (window.location.hash === "#random") {
+    randSwitchInput ();
+  }
+  else {
+    window.onkeydown = function (e) {
+      if (! e.keyCode in keyCodes) return;
+      if (! keys [e.keyCode]) {
+        keys [e.keyCode] = true;
+        dirty = true;
+      }
+    }
+
+    window.onkeyup = function (e) {
+      if (! e.keyCode in keyCodes) return;
+      if (keys [e.keyCode]) {
+        delete keys [e.keyCode];
+        dirty = true;
+      }
     }
   }
 
