@@ -61,7 +61,7 @@ FrameStack.prototype.input = function (time, id, input) {
         states[i].inputs[id] = input;
         i--;
       }
-      return;
+      break;
     }
   }
 }
