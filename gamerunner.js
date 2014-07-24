@@ -85,7 +85,7 @@ GameRunner.prototype._step = function () {
   ));
   if (this._frames.length > MAX_frames) this._frames.pop ();
 
-  var newState = this._frames[0];
+  var newState = this._frames[0].clone();
 
   if (this._ackInputs.length > 0) {
     newState.ackInputs = this._ackInputs;
