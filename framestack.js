@@ -1,5 +1,5 @@
 ;(function(){
-"use strict"
+'use strict';
 
 var MAX_FRAMES = 100;
 
