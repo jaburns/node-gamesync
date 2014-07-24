@@ -1,6 +1,6 @@
 'use strict';
 
-var MAX_STATES = 100;
+var MAX_frames = 100;
 
 function Frame (state, inputs, frame) {
   this.state = state;
@@ -22,7 +22,7 @@ function GameRunner (game, lag) {
   this._game = game;
   this._lag = typeof lag === 'number' ? lag : 0;
 
-  this._states = [new Frame (game.init(), [], 0)];
+  this._frames = [new Frame (game.init(), [], 0)];
 
   this._clientSockets = [];
   this._oldestModifiedInput = -1;
@@ -47,7 +47,7 @@ GameRunner.prototype.addClientSocket = function (socket) {
 
   var firstInput = this._game.defaultInput ();
   firstInput.id = Math.random().toString().substr(2);
-  this._states[0].inputs.push (firstInput);
+  this._frames[0].inputs.push (firstInput);
 
   if (this._stepInterval < 0) {
     this._stepInterval = setInterval (this._step.bind(this), this._game.dt);
@@ -64,28 +64,28 @@ function jsonClone (obj) {
 
 GameRunner.prototype._step = function () {
   if (this._oldestModifiedInput >= 0) {
-    for (var i = 0; i < this._states.length; ++i) {
-      if (this._states[i].frame === this._oldestModifiedInput) break;
+    for (var i = 0; i < this._frames.length; ++i) {
+      if (this._frames[i].frame === this._oldestModifiedInput) break;
     }
     while (i > 0) {
-      this._states[i-1] = new Frame (
-        this._game.step (this._states[i].inputs, jsonClone (this._states[i].state)),
-        this._states[i-1].inputs,
-        this._states[i].frame + 1
+      this._frames[i-1] = new Frame (
+        this._game.step (this._frames[i].inputs, jsonClone (this._frames[i].state)),
+        this._frames[i-1].inputs,
+        this._frames[i].frame + 1
       );
       i--;
     }
     this._oldestModifiedInput = -1;
   }
 
-  this._states.unshift (new Frame (
-    this._game.step (this._states[0].inputs, jsonClone (this._states[0].state)),
-    this._states[0].inputs.slice(),
-    this._states[0].frame + 1
+  this._frames.unshift (new Frame (
+    this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
+    this._frames[0].inputs.slice(),
+    this._frames[0].frame + 1
   ));
-  if (this._states.length > MAX_STATES) this._states.pop ();
+  if (this._frames.length > MAX_frames) this._frames.pop ();
 
-  var newState = this._states[0];
+  var newState = this._frames[0];
 
   if (this._ackInputs.length > 0) {
     newState.ackInputs = this._ackInputs;
@@ -117,14 +117,14 @@ ConnectedClient.prototype.acceptInput = function (ackId, frame, input) {
   this._runner._ackInputs.push (ackId);
   input.id = this._inputId;
 
-  var states = this._runner._states;
+  var frames = this._runner._frames;
 
-  for (var i = 0; i < states.length; ++i) {
-    if (states[i].frame === frame) {
-      for (var j = 0; j < states[i].inputs.length; ++j) {
-        if (states[i].inputs[j].id === input.id) {
+  for (var i = 0; i < frames.length; ++i) {
+    if (frames[i].frame === frame) {
+      for (var j = 0; j < frames[i].inputs.length; ++j) {
+        if (frames[i].inputs[j].id === input.id) {
           while (i >= 0) {
-            states[i].inputs[j] = input;
+            frames[i].inputs[j] = input;
             i--;
           }
           return;
