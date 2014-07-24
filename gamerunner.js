@@ -1,5 +1,7 @@
 'use strict';
 
+//var FrameStack = require('./framestack');
+
 var MAX_frames = 100;
 
 function Frame (state, inputs, frame) {
@@ -113,8 +115,11 @@ function ConnectedClient (runner, inputId) {
 }
 
 ConnectedClient.prototype.acceptInput = function (ackId, frame, input) {
-  this._runner._oldestModifiedInput = frame;
   this._runner._ackInputs.push (ackId);
+
+  if (frame < this._runner._oldestModifiedInput || this._runner._oldestModifiedInput === -1) {
+    this._runner._oldestModifiedInput = frame;
+  }
   input.id = this._inputId;
 
   var frames = this._runner._frames;

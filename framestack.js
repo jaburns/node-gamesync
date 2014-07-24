@@ -39,12 +39,12 @@ Frame.prototype.clone = function () {
  * up to whatever the current time is.
  *
  * this._game -> ...
- * this._oldestChange -> ...
+ * this._oldestModifiedInput -> ...
  * this._frames -> ...
  */
 function FrameStack (game) {
   this._game = game;
-  this._oldestChange = -1;
+  this._oldestModifiedInput = -1;
   this._frames = [new Frame (game.init(), [], 0)];
 
   this.currentFrame = this._frames[0].clone();
@@ -64,17 +64,19 @@ FrameStack.prototype.input = function (frame, input) {
     return;
   }
 
-  if (frame < this._oldestChange || this._oldestChange === -1) {
-    this._oldestChange = frame;
+  if (frame < this._oldestModifiedInput || this._oldestModifiedInput === -1) {
+    this._oldestModifiedInput = frame;
   }
 
   // Make the input adjustment at the appropriate time and propagate it.
-  for (var i = 0; i < this._frames.length; ++i) {
-    if (this._frames[i].frame === frame) {
-      for (j = 0; j < this._frames[i].inputs.length; ++j) {
-        if (this._frames[i].inputs[j].id === input.id) {
+  var frames = this._frames;
+
+  for (var i = 0; i < frames.length; ++i) {
+    if (frames[i].frame === frame) {
+      for (var j = 0; j < frames[i].inputs.length; ++j) {
+        if (frames[i].inputs[j].id === input.id) {
           while (i >= 0) {
-            this._frames[i].inputs[j] = input;
+            frames[i].inputs[j] = input;
             i--;
           }
           return;
@@ -90,9 +92,9 @@ FrameStack.prototype.input = function (frame, input) {
  */
 FrameStack.prototype.step = function () {
   // Resimulate the game starting at the oldest input change.
-  if (this._oldestChange >= 0) {
+  if (this._oldestModifiedInput >= 0) {
     for (var i = 0; i < this._frames.length; ++i) {
-      if (this._frames[i].frame === this._oldestChange) break;
+      if (this._frames[i].frame === this._oldestModifiedInput) break;
     }
     while (i > 0) {
       this._frames[i-1] = new Frame (
@@ -102,7 +104,7 @@ FrameStack.prototype.step = function () {
       );
       i--;
     }
-    this._oldestChange = -1;
+    this._oldestModifiedInput = -1;
   }
 
   // Simulate the next frame, cloning the previous input state.
