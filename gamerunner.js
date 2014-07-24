@@ -25,6 +25,11 @@ GameRunner.prototype.removeClientSocket = function (socket) {
   }
 }
 
+// TODO
+// In framestack and throughout, rename 'frame' to 'time'
+// Kill ConnectedClient, have addClientSocket return 'acceptInput' as a closure.
+// Refactor 'inputs' array in Frame to be a hash keyed by played ID.
+
 GameRunner.prototype.addClientSocket = function (socket) {
   if (this._clientSockets.length >= this._game.players) return null;
   if (this._clientSockets.indexOf (socket) >= 0) return null;

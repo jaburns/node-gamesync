@@ -50,6 +50,8 @@ function FrameStack (game) {
   this.currentFrame = this._frames[0].clone();
 }
 
+/**
+ */
 FrameStack.prototype.pushInput = function (input) {
   this._frames[0].inputs.push (input);
 }
