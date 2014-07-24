@@ -15,11 +15,12 @@ function jsonClone (obj) {
  * this.inputs -> A hash of user-defined Input objects keyed by player ID.
  *                The inputs in frame N are used to compute frame N+1.
  * this.time -> An integer incremented by one every game step.
+ *              (temporarily renamed to confusing name 'frame' to ease merge in to old code)
  */
-function Frame (state, inputs, time) {
+function Frame (state, inputs, frame) {
   this.state = state;
   this.inputs = inputs;
-  this.time = time;
+  this.frame = frame;
 }
 
 /**
@@ -28,7 +29,7 @@ Frame.prototype.clone = function () {
   return new Frame (
     jsonClone (this.state),
     jsonClone (this.inputs),
-    this.time
+    this.frame
   );
 }
 
@@ -51,23 +52,25 @@ function FrameStack (game) {
 
 /**
  */
-FrameStack.prototype.input = function (time, input) {
-  if (time < 0) {
+FrameStack.prototype.input = function (frame, input) {
+  if (frame < 0) {
     for (var j = 0; j < this._frames[0].inputs.length; ++j) {
       if (this._frames[0].inputs[j].id === input.id) {
         this._frames[0].inputs[j] = input;
+        return;
       }
     }
+    this._frames[0].inputs.push (input);
     return;
   }
 
-  if (time < this._oldestChange || this._oldestChange === -1) {
-    this._oldestChange = time;
+  if (frame < this._oldestChange || this._oldestChange === -1) {
+    this._oldestChange = frame;
   }
 
   // Make the input adjustment at the appropriate time and propagate it.
   for (var i = 0; i < this._frames.length; ++i) {
-    if (this._frames[i].time === time) {
+    if (this._frames[i].frame === frame) {
       for (j = 0; j < this._frames[i].inputs.length; ++j) {
         if (this._frames[i].inputs[j].id === input.id) {
           while (i >= 0) {
@@ -89,13 +92,13 @@ FrameStack.prototype.step = function () {
   // Resimulate the game starting at the oldest input change.
   if (this._oldestChange >= 0) {
     for (var i = 0; i < this._frames.length; ++i) {
-      if (this._frames[i].time === this._oldestChange) break;
+      if (this._frames[i].frame === this._oldestChange) break;
     }
     while (i > 0) {
       this._frames[i-1] = new Frame (
         this._game.step (this._frames[i].inputs, jsonClone (this._frames[i].state)),
         this._frames[i-1].inputs,
-        this._frames[i].time + 1
+        this._frames[i].frame + 1
       );
       i--;
     }
@@ -106,7 +109,7 @@ FrameStack.prototype.step = function () {
   this._frames.unshift (new Frame (
     this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
     this._frames[0].inputs.slice(),
-    this._frames[0].time + 1
+    this._frames[0].frame + 1
   ));
 
   if (this._frames.length > MAX_FRAMES) {
