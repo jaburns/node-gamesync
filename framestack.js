@@ -50,27 +50,19 @@ function FrameStack (game) {
   this.currentFrame = this._frames[0].clone();
 }
 
+FrameStack.prototype.pushInput = function (input) {
+  this._frames[0].inputs.push (input);
+}
+
 /**
  */
 FrameStack.prototype.input = function (frame, input) {
-  if (frame < 0) {
-    for (var j = 0; j < this._frames[0].inputs.length; ++j) {
-      if (this._frames[0].inputs[j].id === input.id) {
-        this._frames[0].inputs[j] = input;
-        return;
-      }
-    }
-    this._frames[0].inputs.push (input);
-    return;
-  }
-
   if (frame < this._oldestModifiedInput || this._oldestModifiedInput === -1) {
     this._oldestModifiedInput = frame;
   }
 
   // Make the input adjustment at the appropriate time and propagate it.
   var frames = this._frames;
-
   for (var i = 0; i < frames.length; ++i) {
     if (frames[i].frame === frame) {
       for (var j = 0; j < frames[i].inputs.length; ++j) {
