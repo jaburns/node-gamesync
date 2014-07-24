@@ -2,17 +2,27 @@
 
 var MAX_STATES = 100;
 
+function Frame (state, inputs, frame) {
+  this.state = state;
+  this.inputs = inputs;
+  this.frame = frame;
+}
+
+Frame.prototype.clone = function () {
+  return new Frame (
+    jsonClone (this.state),
+    jsonClone (this.inputs),
+    this.frame
+  );
+}
+
 // ----------------------------------------------------------------------------
 
 function GameRunner (game, lag) {
   this._game = game;
   this._lag = typeof lag === 'number' ? lag : 0;
 
-  this._states = [{
-    state: game.init (),
-    frame: 0,
-    inputs: []
-  }];
+  this._states = [new Frame (game.init(), [], 0)];
 
   this._clientSockets = [];
   this._oldestModifiedInput = -1;
@@ -58,30 +68,29 @@ GameRunner.prototype._step = function () {
       if (this._states[i].frame === this._oldestModifiedInput) break;
     }
     while (i > 0) {
-      this._states[i-1] = {
-        state: this._game.step (this._states[i].inputs, jsonClone (this._states[i].state)),
-        frame: this._states[i].frame + 1,
-        inputs: this._states[i-1].inputs
-      };
+      this._states[i-1] = new Frame (
+        this._game.step (this._states[i].inputs, jsonClone (this._states[i].state)),
+        this._states[i-1].inputs,
+        this._states[i].frame + 1
+      );
       i--;
     }
     this._oldestModifiedInput = -1;
   }
 
-  var oldState = this._states[0];
-  var newState = {
-    state: this._game.step (oldState.inputs, jsonClone (oldState.state)),
-    frame: oldState.frame + 1,
-    inputs: oldState.inputs.slice()
-  };
+  this._states.unshift (new Frame (
+    this._game.step (this._states[0].inputs, jsonClone (this._states[0].state)),
+    this._states[0].inputs.slice(),
+    this._states[0].frame + 1
+  ));
+  if (this._states.length > MAX_STATES) this._states.pop ();
+
+  var newState = this._states[0];
 
   if (this._ackInputs.length > 0) {
     newState.ackInputs = this._ackInputs;
     this._ackInputs = [];
   }
-
-  this._states.unshift (newState);
-  if (this._states.length > MAX_STATES) this._states.pop ();
 
   if (this._lag) {
     setTimeout (function(){ this._sendState (newState); }.bind(this), this._lag);
