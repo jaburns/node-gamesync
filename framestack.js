@@ -44,24 +44,39 @@ Frame.prototype.clone = function () {
 function FrameStack (game) {
   this._game = game;
   this._oldestChange = -1;
-  this._frames = [new Frame (game.init(), {}, 0)];
+  this._frames = [new Frame (game.init(), [], 0)];
 
   this.currentFrame = this._frames[0].clone();
 }
 
 /**
  */
-FrameStack.prototype.input = function (time, id, input) {
-  this._oldestChange = time;
+FrameStack.prototype.input = function (time, input) {
+  if (time < 0) {
+    for (var j = 0; j < this._frames[0].inputs.length; ++j) {
+      if (this._frames[0].inputs[j].id === input.id) {
+        this._frames[0].inputs[j] = input;
+      }
+    }
+    return;
+  }
+
+  if (time < this._oldestChange || this._oldestChange === -1) {
+    this._oldestChange = time;
+  }
 
   // Make the input adjustment at the appropriate time and propagate it.
   for (var i = 0; i < this._frames.length; ++i) {
     if (this._frames[i].time === time) {
-      while (i >= 0) {
-        states[i].inputs[id] = input;
-        i--;
+      for (j = 0; j < this._frames[i].inputs.length; ++j) {
+        if (this._frames[i].inputs[j].id === input.id) {
+          while (i >= 0) {
+            this._frames[i].inputs[j] = input;
+            i--;
+          }
+          return;
+        }
       }
-      break;
     }
   }
 }
@@ -90,15 +105,15 @@ FrameStack.prototype.step = function () {
   // Simulate the next frame, cloning the previous input state.
   this._frames.unshift (new Frame (
     this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
-    jsonClone (this._frames[0].inputs),
+    this._frames[0].inputs.slice(),
     this._frames[0].time + 1
   ));
-
-  this.currentFrame = this._frames[0].clone();
 
   if (this._frames.length > MAX_FRAMES) {
     this._frames.pop ();
   }
+
+  return this.currentFrame = this._frames[0].clone();
 }
 
 // Export FrameStack as node module, or just throw it on the window
