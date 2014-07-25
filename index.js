@@ -51,7 +51,7 @@ module.exports.run = function (server, game, lag) {
     });
 
     socket.on ('message', function (data) {
-      client.acceptInput (data.ackId, data.frame, data.input);
+      client.acceptInput (data.ackId, data.time, data.input);
     });
   });
 }

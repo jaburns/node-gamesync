@@ -17,10 +17,10 @@ function jsonClone (obj) {
  * this.time -> An integer incremented by one every game step.
  *              (temporarily renamed to confusing name 'frame' to ease merge in to old code)
  */
-function Frame (state, inputs, frame) {
+function Frame (state, inputs, time) {
   this.state = state;
   this.inputs = inputs;
-  this.frame = frame;
+  this.time = time;
 }
 
 /**
@@ -29,7 +29,7 @@ Frame.prototype.clone = function () {
   return new Frame (
     jsonClone (this.state),
     jsonClone (this.inputs),
-    this.frame
+    this.time
   );
 }
 
@@ -58,15 +58,15 @@ FrameStack.prototype.pushInput = function (input) {
 
 /**
  */
-FrameStack.prototype.input = function (frame, input) {
-  if (frame < this._oldestModifiedInput || this._oldestModifiedInput === -1) {
-    this._oldestModifiedInput = frame;
+FrameStack.prototype.input = function (time, input) {
+  if (time < this._oldestModifiedInput || this._oldestModifiedInput === -1) {
+    this._oldestModifiedInput = time;
   }
 
   // Make the input adjustment at the appropriate time and propagate it.
   var frames = this._frames;
   for (var i = 0; i < frames.length; ++i) {
-    if (frames[i].frame === frame) {
+    if (frames[i].time === time) {
       for (var j = 0; j < frames[i].inputs.length; ++j) {
         if (frames[i].inputs[j].id === input.id) {
           while (i >= 0) {
@@ -88,13 +88,13 @@ FrameStack.prototype.step = function () {
   // Resimulate the game starting at the oldest input change.
   if (this._oldestModifiedInput >= 0) {
     for (var i = 0; i < this._frames.length; ++i) {
-      if (this._frames[i].frame === this._oldestModifiedInput) break;
+      if (this._frames[i].time === this._oldestModifiedInput) break;
     }
     while (i > 0) {
       this._frames[i-1] = new Frame (
         this._game.step (this._frames[i].inputs, jsonClone (this._frames[i].state)),
         this._frames[i-1].inputs,
-        this._frames[i].frame + 1
+        this._frames[i].time + 1
       );
       i--;
     }
@@ -105,7 +105,7 @@ FrameStack.prototype.step = function () {
   this._frames.unshift (new Frame (
     this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
     this._frames[0].inputs.slice(),
-    this._frames[0].frame + 1
+    this._frames[0].time + 1
   ));
 
   if (this._frames.length > MAX_FRAMES) {

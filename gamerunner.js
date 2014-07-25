@@ -80,11 +80,11 @@ function ConnectedClient (runner, inputId) {
   this._runner = runner;
 }
 
-ConnectedClient.prototype.acceptInput = function (ackId, frame, input) {
+ConnectedClient.prototype.acceptInput = function (ackId, time, input) {
   this._runner._ackInputs.push (ackId);
   input.id = this._inputId;
 
-  this._runner._frameStack.input (frame, input);
+  this._runner._frameStack.input (time, input);
 }
 
 // ----------------------------------------------------------------------------

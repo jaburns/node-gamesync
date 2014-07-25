@@ -52,10 +52,10 @@ function runGame (game, render, getInput) {
         socket.json.send ({
           ackId: lastInputAckId,
           input: lastNewInput,
-          frame: data.frame
+          time: data.time
         });
       }
-      
+
       if (readInput || predictionFrame) {
         predictionFrame = game.step (combineInputs (data.inputs, lastNewInput),
           predictionFrame ? predictionFrame : data.state);
