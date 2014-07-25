@@ -46,8 +46,6 @@ function FrameStack (game) {
   this._game = game;
   this._oldestModifiedInput = -1;
   this._frames = [new Frame (game.init(), {}, 0)];
-
-  this.currentFrame = this._frames[0].clone();
 }
 
 /**
@@ -109,8 +107,6 @@ FrameStack.prototype.step = function () {
   if (this._frames.length > MAX_FRAMES) {
     this._frames.pop ();
   }
-
-  return this.currentFrame = this._frames[0].clone();
 }
 
 // Export FrameStack as node module, or just throw it on the window
