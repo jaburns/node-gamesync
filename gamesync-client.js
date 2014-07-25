@@ -38,13 +38,11 @@ function runGame (game, render, getInput) {
         lastNewInput = readInput;
         lastInputAckId = Math.random().toString().substr(2);
 
-        var sendy = {
+        socket.json.send ({
           ackId: lastInputAckId,
           input: lastNewInput,
           time: data.time
-        };
-
-        socket.json.send (sendy);
+        });
       }
 
       if (readInput || predictionFrame) {
