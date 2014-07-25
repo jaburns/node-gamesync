@@ -107,6 +107,8 @@ FrameStack.prototype.step = function () {
   if (this._frames.length > MAX_FRAMES) {
     this._frames.pop ();
   }
+  
+  return this._frames[0].clone();
 }
 
 // Export FrameStack as node module, or just throw it on the window
