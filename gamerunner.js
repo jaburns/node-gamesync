@@ -61,7 +61,7 @@ GameRunner.prototype._step = function () {
   }
 
   if (this._lag) {
-    setTimeout (function(){ this._sendState (newState); }.bind(this), this._lag);
+    setTimeout (this._sendState.bind(this,newState), this._lag);
   } else {
     this._sendState (newState);
   }
