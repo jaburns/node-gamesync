@@ -23,31 +23,24 @@ GameRunner.prototype.removeClientSocket = function (socket) {
   }
 }
 
-// TODO
-// Refactor 'inputs' array in Frame to be a hash keyed by played ID.
-
 GameRunner.prototype.addClientSocket = function (socket) {
   if (this._clientSockets.length >= this._game.players) return null;
   if (this._clientSockets.indexOf (socket) >= 0) return null;
   this._clientSockets.push (socket);
 
-  var playerId = Math.random().toString().substr(2);
   var firstInput = this._game.defaultInput ();
-
-  firstInput.id = playerId;
-  this._frameStack.pushInput (firstInput);
+  var playerId = this._frameStack.pushInput (firstInput);
 
   if (this._stepInterval < 0) {
     this._stepInterval = setInterval (this._step.bind(this), this._game.dt);
   }
 
-  socket.json.send ({'notifyInputId': firstInput.id});
+  socket.json.send ({'notifyInputId': playerId});
 
   return {
     acceptInput: function (ackId, time, input) {
       this._ackInputs.push (ackId);
-      input.id = playerId;
-      this._frameStack.input (time, input);
+      this._frameStack.input (time, playerId, input);
     }.bind (this)
   };
 }

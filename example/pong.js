@@ -26,8 +26,13 @@ var game = (function () {
     }
   }
 
-  function stepper (inputs, state)
+  function stepper (inputHash, state)
   {
+    var inputs = [];
+    for (var key in inputHash) {
+      inputs.push (inputHash[key]);
+    }
+
     if (inputs.length < 2) return state;
 
     var ns = {

@@ -45,7 +45,7 @@ Frame.prototype.clone = function () {
 function FrameStack (game) {
   this._game = game;
   this._oldestModifiedInput = -1;
-  this._frames = [new Frame (game.init(), [], 0)];
+  this._frames = [new Frame (game.init(), {}, 0)];
 
   this.currentFrame = this._frames[0].clone();
 }
@@ -53,12 +53,14 @@ function FrameStack (game) {
 /**
  */
 FrameStack.prototype.pushInput = function (input) {
-  this._frames[0].inputs.push (input);
+  var id = Math.random().toString().substr(2);
+  this._frames[0].inputs[id] = input;
+  return id;
 }
 
 /**
  */
-FrameStack.prototype.input = function (time, input) {
+FrameStack.prototype.input = function (time, id, input) {
   if (time < this._oldestModifiedInput || this._oldestModifiedInput === -1) {
     this._oldestModifiedInput = time;
   }
@@ -67,15 +69,11 @@ FrameStack.prototype.input = function (time, input) {
   var frames = this._frames;
   for (var i = 0; i < frames.length; ++i) {
     if (frames[i].time === time) {
-      for (var j = 0; j < frames[i].inputs.length; ++j) {
-        if (frames[i].inputs[j].id === input.id) {
-          while (i >= 0) {
-            frames[i].inputs[j] = input;
-            i--;
-          }
-          return;
-        }
+      while (i >= 0) {
+        frames[i].inputs[id] = input;
+        i--;
       }
+      break;
     }
   }
 }
@@ -104,7 +102,7 @@ FrameStack.prototype.step = function () {
   // Simulate the next frame, cloning the previous input state.
   this._frames.unshift (new Frame (
     this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
-    this._frames[0].inputs.slice(),
+    jsonClone (this._frames[0].inputs),
     this._frames[0].time + 1
   ));
 
