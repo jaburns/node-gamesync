@@ -1,7 +1,8 @@
 ;(function(){
 'use strict';
 
-var MAX_FRAMES = 100;
+var MAX_FRAMES = 10;
+var NTH_FRAME = 3;
 
 function jsonClone (obj) {
   return JSON.parse (JSON.stringify (obj));
@@ -97,18 +98,30 @@ FrameStack.prototype.step = function () {
     this._oldestModifiedInput = -1;
   }
 
+  // Pull the state N frames in the past, along with the inputs up to the present.
+  var returnObject = null;
+  if (this._frames.length > NTH_FRAME) {
+    returnObject = {
+      pastTime: this._frames[NTH_FRAME].time,
+      pastState: this._frames[NTH_FRAME].state,
+      knownInputs: [],
+    };
+    for (i = 0; i <= NTH_FRAME; ++i) {
+      returnObject.knownInputs.push (this._frames[i].inputs);
+    }
+  }
+
   // Simulate the next frame, cloning the previous input state.
   this._frames.unshift (new Frame (
     this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
     jsonClone (this._frames[0].inputs),
     this._frames[0].time + 1
   ));
-
   if (this._frames.length > MAX_FRAMES) {
     this._frames.pop ();
   }
-  
-  return this._frames[0].clone();
+
+  return returnObject;
 }
 
 // Export FrameStack as node module, or just throw it on the window
