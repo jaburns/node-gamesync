@@ -121,7 +121,7 @@ FrameStack.prototype.step = function () {
     this._frames.pop ();
   }
 
-  return returnObject;
+  return this._frames[0].clone();
 }
 
 // Export FrameStack as node module, or just throw it on the window

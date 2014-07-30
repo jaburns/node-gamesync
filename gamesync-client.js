@@ -2,8 +2,11 @@ function runGame (game, render, getInput) {
   'use strict';
 
   var socket = io.connect (document.URL);
+
   var inputId = null;
-  var localInputs = [];
+  var predictionFrame = null;
+  var lastInputAckId = null;
+  var lastNewInput = null;
 
   socket.on ('connect', function () {
     socket.on ('message', function (data) {
@@ -16,24 +19,35 @@ function runGame (game, render, getInput) {
         return;
       }
 
-      var state = data.pastState;
-      var time = data.time;
-
-      while (data.knownInputs.length > 0) {
-        state = game.step (data.knownInputs.pop(), state);
-        time++;
+      if (lastInputAckId && data.ackInputs
+      && data.ackInputs.indexOf (lastInputAckId) >= 0) {
+        predictionFrame = null;
+        lastInputAckId = null;
+        lastNewInput = null;
       }
 
-      render (state);
+      if (predictionFrame) {
+        render (predictionFrame);
+      } else {
+        render (data.state);
+      }
 
       var readInput = getInput ();
 
       if (readInput) {
-        // TODO keep track of local inputs and integrate in to data coming back from server.
+        lastNewInput = readInput;
+        lastInputAckId = Math.random().toString().substr(2);
+
         socket.json.send ({
-          input: readInput,
-          time: time
+          ackId: lastInputAckId,
+          input: lastNewInput,
+          time: data.time
         });
+      }
+
+      if (readInput || predictionFrame) {
+        data.inputs[inputId] = lastNewInput;
+        predictionFrame = game.step (data.inputs, predictionFrame ? predictionFrame : data.state);
       }
     });
   });
