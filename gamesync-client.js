@@ -15,22 +15,14 @@ function runGame (game, render, getInput) {
         return;
       }
 
-      if (data.pastState) {
-        var fixState = data.pastState;
-        var newTime = data.pastTime + data.knownInputs.length;
-        var latestInputs = null;
-        while (data.knownInputs.length) {
-          latestInputs = data.knownInputs.pop();
-          fixState = game.step (latestInputs, fixState);
-        }
-        data = {
-          state: fixState,
-          inputs: latestInputs,
-          time: newTime
-        };
+      var frame = {};
+      frame.state = data.pastState;
+      frame.time = data.pastTime + data.knownInputs.length;
+      while (data.knownInputs.length) {
+        frame.state = game.step (data.knownInputs.pop(), frame.state);
       }
 
-      render (data.state);
+      render (frame.state);
 
       var readInput = getInput ();
 
@@ -38,7 +30,7 @@ function runGame (game, render, getInput) {
         socket.json.send ({
           ackId: Math.random().toString().substr(2),
           input: readInput,
-          time: data.time
+          time: frame.time
         });
       }
     });

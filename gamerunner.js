@@ -45,8 +45,13 @@ GameRunner.prototype.addClientSocket = function (socket) {
   };
 }
 
+function jsonClone (obj) {
+  return JSON.parse (JSON.stringify (obj));
+}
+
 GameRunner.prototype._step = function () {
   var newState = this._frameStack.step ();
+  if (! newState) return;
 
   if (this._ackInputs.length > 0) {
     newState.ackInputs = this._ackInputs;
@@ -54,7 +59,7 @@ GameRunner.prototype._step = function () {
   }
 
   if (this._lag) {
-    setTimeout (this._sendState.bind(this,newState), this._lag);
+    setTimeout (this._sendState.bind (this, jsonClone (newState)), this._lag);
   } else {
     this._sendState (newState);
   }

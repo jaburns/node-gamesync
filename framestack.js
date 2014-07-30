@@ -2,7 +2,7 @@
 'use strict';
 
 var MAX_FRAMES = 30;
-var NTH_FRAME = 3;
+var NTH_FRAME = 10;
 
 function jsonClone (obj) {
   return JSON.parse (JSON.stringify (obj));
@@ -121,8 +121,11 @@ FrameStack.prototype.step = function () {
     this._frames.pop ();
   }
 
-  //if (returnObject) return returnObject
-  return this._frames[0].clone();
+  if (returnObject) {
+    returnObject.modernState = this._frames[0].state;
+  }
+
+  return returnObject;
 }
 
 // Export FrameStack as node module, or just throw it on the window
