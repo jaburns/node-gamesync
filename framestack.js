@@ -98,6 +98,10 @@ FrameStack.prototype.step = function () {
     this._oldestModifiedInput = -1;
   }
 
+  // TODO: probably don't even need to simulate the frames after the Nth, the
+  // clients will all do so independently and they don't care if the server
+  // is a bit further ahead.
+
   // Pull the state N frames in the past, along with the inputs up to the present.
   var returnObject = null;
   if (this._frames.length > NTH_FRAME) {

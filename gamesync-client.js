@@ -19,7 +19,9 @@ function runGame (game, render, getInput) {
       frame.state = data.pastState;
       frame.time = data.pastTime + data.knownInputs.length;
       while (data.knownInputs.length) {
-        frame.state = game.step (data.knownInputs.pop(), frame.state);
+        var frameInputs = data.knownInputs.pop();
+        // TODO if we have some known local inputs to add to this frame then do so here
+        frame.state = game.step (frameInputs, frame.state);
       }
 
       render (frame.state);
@@ -27,6 +29,7 @@ function runGame (game, render, getInput) {
       var readInput = getInput ();
 
       if (readInput) {
+        // TODO keep track of the inputs that are happening locally so we can integrate them next frame
         socket.json.send ({
           ackId: Math.random().toString().substr(2),
           input: readInput,
