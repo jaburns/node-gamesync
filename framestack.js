@@ -1,7 +1,7 @@
 ;(function(){
 'use strict';
 
-var MAX_FRAMES = 10;
+var MAX_FRAMES = 30;
 var NTH_FRAME = 3;
 
 function jsonClone (obj) {
@@ -121,6 +121,7 @@ FrameStack.prototype.step = function () {
     this._frames.pop ();
   }
 
+  //if (returnObject) return returnObject
   return this._frames[0].clone();
 }
 
