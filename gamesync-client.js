@@ -4,6 +4,9 @@ function runGame (game, render, getInput) {
   var socket = io.connect (document.URL);
   var inputId = null;
 
+  var latestInput = game.defaultInput ();
+  var storedInputs = [];
+
   socket.on ('connect', function () {
     socket.on ('message', function (data) {
       if (data.error) {
@@ -17,11 +20,17 @@ function runGame (game, render, getInput) {
 
       var frame = {};
       frame.state = data.pastState;
-      frame.time = data.pastTime + data.knownInputs.length;
+      frame.time = data.pastTime;
       while (data.knownInputs.length) {
         var frameInputs = data.knownInputs.pop();
-        // TODO if we have some known local inputs to add to this frame then do so here
+        for (var i = 0; i < storedInputs.length; ++i) {
+          if (storedInputs[i].time === frame.time) {
+            frameInputs[inputId] = storedInputs[i].input;
+            break;
+          }
+        }
         frame.state = game.step (frameInputs, frame.state);
+        frame.time++;
       }
 
       render (frame.state);
@@ -29,12 +38,20 @@ function runGame (game, render, getInput) {
       var readInput = getInput ();
 
       if (readInput) {
-        // TODO keep track of the inputs that are happening locally so we can integrate them next frame
+        latestInput = readInput;
         socket.json.send ({
           input: readInput,
           time: frame.time
         });
       }
+
+      storedInputs.unshift ({
+        input: latestInput,
+        time: frame.time
+      });
+
+      // TODO Replace magic number with science number
+      if (storedInputs.length > 50) storedInputs.pop ();
     });
   });
 }
