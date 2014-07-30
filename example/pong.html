@@ -30,7 +30,7 @@ var getInput = (function(){
       keys[Math.random() > 0.5 ? keyCodes.left : keyCodes.right] = true;
       dirty = true;
     }
-    setTimeout (randSwitchInput, 100+Math.random(Math.random()*900));
+    setTimeout (randSwitchInput, 100+Math.round(Math.random()*500));
   }
 
   if (window.location.hash === "#random") {
