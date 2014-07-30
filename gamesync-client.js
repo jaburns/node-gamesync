@@ -31,7 +31,6 @@ function runGame (game, render, getInput) {
       if (readInput) {
         // TODO keep track of the inputs that are happening locally so we can integrate them next frame
         socket.json.send ({
-          ackId: Math.random().toString().substr(2),
           input: readInput,
           time: frame.time
         });

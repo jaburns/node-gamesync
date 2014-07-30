@@ -9,7 +9,6 @@ function GameRunner (game, lag) {
   this._frameStack = new FrameStack (game);
 
   this._clientSockets = [];
-  this._ackInputs = [];
   this._stepInterval = -1;
 }
 
@@ -38,8 +37,7 @@ GameRunner.prototype.addClientSocket = function (socket) {
   socket.json.send ({'notifyInputId': playerId});
 
   return {
-    acceptInput: function (ackId, time, input) {
-      this._ackInputs.push (ackId);
+    acceptInput: function (time, input) {
       this._frameStack.input (time, playerId, input);
     }.bind (this)
   };
@@ -52,11 +50,6 @@ function jsonClone (obj) {
 GameRunner.prototype._step = function () {
   var newState = this._frameStack.step ();
   if (! newState) return;
-
-  if (this._ackInputs.length > 0) {
-    newState.ackInputs = this._ackInputs;
-    this._ackInputs = [];
-  }
 
   if (this._lag) {
     setTimeout (this._sendState.bind (this, jsonClone (newState)), this._lag);
