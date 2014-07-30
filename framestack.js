@@ -121,10 +121,6 @@ FrameStack.prototype.step = function () {
     this._frames.pop ();
   }
 
-  if (returnObject) {
-    returnObject.modernState = this._frames[0].state;
-  }
-
   return returnObject;
 }
 
