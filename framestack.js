@@ -1,4 +1,3 @@
-;(function(){
 'use strict';
 
 var MAX_FRAMES = 30;
@@ -128,9 +127,4 @@ FrameStack.prototype.step = function () {
   return returnObject;
 }
 
-// Export FrameStack as node module, or just throw it on the window
-// object for the client (for now until sorting out a client code plan).
-if (typeof module !== 'undefined') module.exports = FrameStack;
-else if (typeof window !== 'undefined') window.FrameStack = FrameStack;
-
-})();
+module.exports = FrameStack;
