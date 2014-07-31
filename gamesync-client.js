@@ -1,6 +1,8 @@
-function runGame (game, render, getInput) {
+function runGame (game, render, getInput, renderLag) {
   'use strict';
   var socket = io.connect (document.URL);
+
+  if (typeof renderLag === 'undefined') renderLag = 0;
 
   socket.on ('connect', function () {
     var inputId = null;
@@ -37,7 +39,7 @@ function runGame (game, render, getInput) {
       var frame = {};
       frame.state = data.pastState;
       frame.time = data.pastTime;
-      while (data.knownInputs.length) {
+      while (data.knownInputs.length > renderLag) {
         var frameInputs = data.knownInputs.pop();
         for (var i = 0; i < storedInputs.length; ++i) {
           if (storedInputs[i].time === frame.time) {
