@@ -1,13 +1,12 @@
 function runGame (game, render, getInput) {
   'use strict';
-
   var socket = io.connect (document.URL);
-  var inputId = null;
-
-  var latestInput = game.defaultInput ();
-  var storedInputs = [];
 
   socket.on ('connect', function () {
+    var inputId = null;
+    var latestInput = game.defaultInput ();
+    var storedInputs = [];
+
     socket.on ('message', function (data) {
       if (data.error) {
         alert (data.error);
