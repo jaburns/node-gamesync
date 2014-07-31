@@ -18,6 +18,23 @@ function runGame (game, render, getInput) {
         return;
       }
 
+      var newInputTime = data.pastTime + data.knownInputs.length - 1;
+
+      var readInput = getInput ();
+
+      if (readInput) {
+        latestInput = readInput;
+        socket.json.send ({
+          input: readInput,
+          time: newInputTime
+        });
+      }
+
+      storedInputs.unshift ({
+        input: latestInput,
+        time: newInputTime
+      });
+
       var frame = {};
       frame.state = data.pastState;
       frame.time = data.pastTime;
@@ -34,21 +51,6 @@ function runGame (game, render, getInput) {
       }
 
       render (frame.state);
-
-      var readInput = getInput ();
-
-      if (readInput) {
-        latestInput = readInput;
-        socket.json.send ({
-          input: readInput,
-          time: frame.time
-        });
-      }
-
-      storedInputs.unshift ({
-        input: latestInput,
-        time: frame.time
-      });
 
       // TODO Replace magic number with science number
       if (storedInputs.length > 50) storedInputs.pop ();
