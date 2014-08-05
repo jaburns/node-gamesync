@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+printf '
+;(function(){
+' > game.js.big
+
+fay Game.hs --strict Game -o game.js.meat
+cat game.js.meat >> game.js.big
+rm game.js.meat
+
+printf '
+  Strict.Game.step = (function(){
+    var step = Strict.Game.step;
+    return function (a,b) { return step(a)(b); }
+  })();
+  if (typeof module !== "undefined") {
+    module.exports = Strict.Game;
+  } else {
+    window.game = Strict.Game;
+  }
+})();
+' >> game.js.big
+
+jsmin game.js.big > game.js
+rm game.js.big
+
