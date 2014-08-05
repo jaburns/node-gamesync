@@ -27,7 +27,7 @@ GameRunner.prototype.addClientSocket = function (socket) {
   if (this._clientSockets.indexOf (socket) >= 0) return null;
   this._clientSockets.push (socket);
 
-  var firstInput = this._game.defaultInput ();
+  var firstInput = this._game.defaultInput;
   var playerId = this._frameStack.pushInput (firstInput);
 
   if (this._stepInterval < 0) {

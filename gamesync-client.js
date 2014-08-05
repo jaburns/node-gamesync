@@ -6,7 +6,7 @@ function runGame (game, render, getInput, renderLag) {
 
   socket.on ('connect', function () {
     var inputId = null;
-    var latestInput = game.defaultInput ();
+    var latestInput = game.defaultInput;
     var storedInputs = [];
 
     socket.on ('message', function (data) {
