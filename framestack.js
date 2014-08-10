@@ -88,7 +88,7 @@ FrameStack.prototype.step = function () {
     }
     while (i > 0) {
       this._frames[i-1] = new Frame (
-        this._game.step (this._frames[i].inputs, jsonClone (this._frames[i].state)),
+        this._game.step (jsonClone (this._frames[i].inputs), jsonClone (this._frames[i].state)),
         this._frames[i-1].inputs,
         this._frames[i].time + 1
       );
@@ -116,7 +116,7 @@ FrameStack.prototype.step = function () {
 
   // Simulate the next frame, cloning the previous input state.
   this._frames.unshift (new Frame (
-    this._game.step (this._frames[0].inputs, jsonClone (this._frames[0].state)),
+    this._game.step (jsonClone (this._frames[0].inputs), jsonClone (this._frames[0].state)),
     jsonClone (this._frames[0].inputs),
     this._frames[0].time + 1
   ));

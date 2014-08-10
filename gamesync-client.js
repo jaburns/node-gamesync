@@ -47,7 +47,7 @@ function runGame (game, render, getInput, renderLag) {
             break;
           }
         }
-        frame.state = game.step (frameInputs, frame.state);
+        frame.state = game.step (JSON.parse (JSON.stringify (frameInputs)), frame.state);
         frame.time++;
       }
 
