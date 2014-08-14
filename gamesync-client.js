@@ -1,61 +1,66 @@
-function runGame (game, render, getInput, renderLag) {
+;window.gamesync = (function(){
   'use strict';
-  var socket = io.connect (document.URL);
 
-  if (typeof renderLag === 'undefined') renderLag = 0;
+  return {
+    runGame: function (game, render, getInput, renderLag) {
+      var socket = io.connect (document.URL);
 
-  socket.on ('connect', function () {
-    var inputId = null;
-    var latestInput = game.defaultInput;
-    var storedInputs = [];
+      if (typeof renderLag === 'undefined') renderLag = 0;
 
-    socket.on ('message', function (data) {
-      if (data.error) {
-        alert (data.error);
-        return;
-      }
-      if (data.notifyInputId) {
-        inputId = data.notifyInputId;
-        return;
-      }
+      socket.on ('connect', function () {
+        var inputId = null;
+        var latestInput = game.defaultInput;
+        var storedInputs = [];
 
-      var newInputTime = data.pastTime + data.knownInputs.length - 1;
-
-      var readInput = getInput ();
-
-      if (readInput) {
-        latestInput = readInput;
-        socket.json.send ({
-          input: readInput,
-          time: newInputTime
-        });
-      }
-
-      storedInputs.unshift ({
-        input: latestInput,
-        time: newInputTime
-      });
-
-      var frame = {};
-      frame.state = data.pastState;
-      frame.time = data.pastTime;
-      while (data.knownInputs.length > renderLag) {
-        var frameInputs = data.knownInputs.pop();
-        for (var i = 0; i < storedInputs.length; ++i) {
-          if (storedInputs[i].time === frame.time) {
-            frameInputs[inputId] = storedInputs[i].input;
-            break;
+        socket.on ('message', function (data) {
+          if (data.error) {
+            alert (data.error);
+            return;
           }
-        }
-        frame.state = game.step (JSON.parse (JSON.stringify (frameInputs)), frame.state);
-        frame.time++;
-      }
+          if (data.notifyInputId) {
+            inputId = data.notifyInputId;
+            return;
+          }
 
-      render (frame.state);
+          var newInputTime = data.pastTime + data.knownInputs.length - 1;
 
-      // TODO Replace magic number with science number
-      if (storedInputs.length > 50) storedInputs.pop ();
-    });
-  });
-}
+          var readInput = getInput ();
+
+          if (readInput) {
+            latestInput = readInput;
+            socket.json.send ({
+              input: readInput,
+              time: newInputTime
+            });
+          }
+
+          storedInputs.unshift ({
+            input: latestInput,
+            time: newInputTime
+          });
+
+          var frame = {};
+          frame.state = data.pastState;
+          frame.time = data.pastTime;
+          while (data.knownInputs.length > renderLag) {
+            var frameInputs = data.knownInputs.pop();
+            for (var i = 0; i < storedInputs.length; ++i) {
+              if (storedInputs[i].time === frame.time) {
+                frameInputs[inputId] = storedInputs[i].input;
+                break;
+              }
+            }
+            frame.state = game.step (JSON.parse (JSON.stringify (frameInputs)), frame.state);
+            frame.time++;
+          }
+
+          render (frame.state);
+
+          // TODO Replace magic number with science number
+          if (storedInputs.length > 50) storedInputs.pop ();
+        });
+      });
+    }
+  }
+})();
 
