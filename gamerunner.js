@@ -1,6 +1,7 @@
 'use strict';
 
 var FrameStack = require('./framestack');
+var util = require('./util');
 
 function GameRunner (game, lag) {
   this._game = game;
@@ -43,16 +44,12 @@ GameRunner.prototype.addClientSocket = function (socket) {
   };
 }
 
-function jsonClone (obj) {
-  return JSON.parse (JSON.stringify (obj));
-}
-
 GameRunner.prototype._step = function () {
   var newState = this._frameStack.step ();
   if (! newState) return;
 
   if (this._lag) {
-    setTimeout (this._sendState.bind (this, jsonClone (newState)), this._lag);
+    setTimeout (this._sendState.bind (this, util.jsonClone (newState)), this._lag);
   } else {
     this._sendState (newState);
   }
