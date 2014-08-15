@@ -8,14 +8,14 @@ function jsonClone (obj) {
 }
 
 /**
- * This structure represents a single frame of gameplay.
+ * This structure represents a single frame of gameplay.  The properties of this
+ * data structure must be JSON-serializable.
  *
- * this.state -> A user-defined State object representing the state of the game
+ * this.state -> A user-defined State structure representing the state of the game
  *               this frame.
- * this.inputs -> A hash of user-defined Input objects keyed by player ID.
+ * this.inputs -> A hash of user-defined Input structures keyed by player ID.
  *                The inputs in frame N are used to compute frame N+1.
  * this.time -> An integer incremented by one every game step.
- *              (temporarily renamed to confusing name 'frame' to ease merge in to old code)
  */
 function Frame (state, inputs, time) {
   this.state = state;
@@ -24,6 +24,7 @@ function Frame (state, inputs, time) {
 }
 
 /**
+ * Creates a deep copy of the Frame, removing anything which can't be serialized.
  */
 Frame.prototype.clone = function () {
   return new Frame (
@@ -49,6 +50,8 @@ function FrameStack (game) {
 }
 
 /**
+ * Adds a new input to the FrameStack at the current frame.  A unique player ID
+ * is attached to it and returned.
  */
 FrameStack.prototype.pushInput = function (input) {
   var id = Math.random().toString().substr(2);
@@ -57,6 +60,8 @@ FrameStack.prototype.pushInput = function (input) {
 }
 
 /**
+ * Notifies the FrameStack that an input change event by player 'id' has happened at
+ * time 'time'.  The parameter 'input' should by the user-defined Input structure.
  */
 FrameStack.prototype.input = function (time, id, input) {
   if (time < this._oldestModifiedInput || this._oldestModifiedInput === -1) {
