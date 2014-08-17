@@ -29,7 +29,6 @@ module.exports.run = function (server, game, lag) {
   if (typeof lag === 'undefined') lag = 0;
 
   var io = socketio.listen (server);
-  io.set ('log level', 2);
 
   addPriorityRequestListener (server, CLIENT_SCRIPT_URL, function (req, res) {
     res.writeHead (200);
