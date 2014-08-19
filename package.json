@@ -1,6 +1,6 @@
 {
   "name": "gamesync",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Generic lag compensation and client-side prediction engine for multiplayer javascript games.",
   "author": {
     "name": "Jeremy Burns",
