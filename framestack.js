@@ -1,6 +1,6 @@
 'use strict';
 
-var MAX_FRAMES = 30;
+var MAX_FRAMES = 30; // TODO this values needs to be determined by measuring the ping of the clients.
 var NTH_FRAME = 10;
 
 var util = require('./util');
