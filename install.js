@@ -6,7 +6,7 @@ var fs = require('fs');
 if (! fs.existsSync('client.bundle.js')) {
   var b = require('browserify')('./client/main');
   b.bundle(function(err,buf) {
-    console.log (err);
-    fs.writeFileSync('client.bundle.js', buf.toString());
+    if (err) console.error(err);
+    else fs.writeFileSync('client.bundle.js', buf.toString());
   });
 }
