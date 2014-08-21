@@ -18,7 +18,11 @@
     "url": "https://github.com/jaburns/node-gamesync/blob/master/LICENSE"
   },
   "dependencies": {
-    "socket.io": "1.0.x"
+    "socket.io": "1.0.x",
+    "browserify": "5.10.x"
+  },
+  "scripts": {
+    "postinstall": "node install"
   }
 }
 
