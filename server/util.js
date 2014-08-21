@@ -7,7 +7,7 @@ var util = {
 
   jsonEqual: function (a,b) {
     return JSON.stringify (a) === JSON.stringify (b);
-  }
+  },
 
   jsonLerp: function (a, b, t) {
     if (t < 0) return a;
