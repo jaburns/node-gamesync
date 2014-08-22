@@ -59,6 +59,14 @@ describe('json', function(){
       assert.equal('undefined', typeof halfLerp['someString']);
       assert.equal('undefined', typeof halfLerp['newProperty']);
     });
+
+    it('should not drop strings',function(){
+      assert.notEqual('undefined', typeof halfLerp.someObject.nestedObject['deepString']);
+    });
+
+    it('should not convert arrays to hashes',function(){
+      assert (halfLerp.someArray instanceof Array);
+    });
   });
 
   describe('#applyDiff()',function(){

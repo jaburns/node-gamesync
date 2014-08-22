@@ -19,6 +19,8 @@ var json = {
         ret[k] = a[k] + t * (b[k] - a[k]);
       } else if (typeof a[k] === 'object' && typeof b[k] === 'object') {
         ret[k] = json.lerp (a[k], b[k], t);
+      } else {
+        ret[k] = a[k];
       }
     }
     return ret;
