@@ -2,6 +2,7 @@
   'use strict';
 
   return {
+    json: require('../shared/json'),
     runGame: function (game, render, getInput, renderLag) {
       var socket = io.connect (document.URL);
 
