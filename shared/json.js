@@ -1,5 +1,7 @@
 'use strict';
 
+var lerp_
+
 var json = {
   clone: function (a) {
     return JSON.parse (JSON.stringify (a));
@@ -12,7 +14,7 @@ var json = {
   lerp: function (a, b, t) {
     if (t < 0) return a;
     if (t > 1) return b;
-    var ret = {};
+    var ret = (a instanceof Array && b instanceof Array) ? [] : {};
     for (var k in a) {
       if (typeof b[k] === 'undefined') continue;
       if (typeof a[k] === 'number' && typeof b[k] === 'number') {
