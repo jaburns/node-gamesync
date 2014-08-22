@@ -1,7 +1,7 @@
 'use strict';
 
 var FrameStack = require('./framestack');
-var util = require('./util');
+var json = require('../shared/json');
 
 function GameRunner (game, lag) {
   this._game = game;
@@ -49,7 +49,7 @@ GameRunner.prototype._step = function () {
   if (! newState) return;
 
   if (this._lag) {
-    setTimeout (this._sendState.bind (this, util.jsonClone (newState)), this._lag);
+    setTimeout (this._sendState.bind (this, json.clone (newState)), this._lag);
   } else {
     this._sendState (newState);
   }

@@ -1,15 +1,15 @@
 'use strict';
 
-var util = {
-  jsonClone: function (a) {
+var json = {
+  clone: function (a) {
     return JSON.parse (JSON.stringify (a));
   },
 
-  jsonEqual: function (a,b) {
+  equal: function (a,b) {
     return JSON.stringify (a) === JSON.stringify (b);
   },
 
-  jsonLerp: function (a, b, t) {
+  lerp: function (a, b, t) {
     if (t < 0) return a;
     if (t > 1) return b;
     var ret = {};
@@ -18,13 +18,13 @@ var util = {
       if (typeof a[k] === 'number' && typeof b[k] === 'number') {
         ret[k] = a[k] + t * (b[k] - a[k]);
       } else if (typeof a[k] === 'object' && typeof b[k] === 'object') {
-        ret[k] = util.jsonLerp (a[k], b[k], t);
+        ret[k] = json.lerp (a[k], b[k], t);
       }
     }
     return ret;
   },
 
-  jsonDiff: function (a,b) {
+  diff: function (a,b) {
     var ret = {};
     var keys = Object.keys(a).concat(Object.keys(b));
     for (var i = 0; i < keys.length; ++i) {
@@ -36,8 +36,8 @@ var util = {
         ret['-'+k] = 0;
       }
       else if (typeof a[k] === 'object' && typeof b[k] === 'object') {
-        if (!util.jsonEqual (a[k], b[k])) {
-          ret['*'+k] = util.jsonDiff (a[k],b[k]);
+        if (!json.equal (a[k], b[k])) {
+          ret['*'+k] = json.diff (a[k],b[k]);
         }
       }
       else if (a[k] !== b[k]) {
@@ -47,8 +47,8 @@ var util = {
     return ret;
   },
 
-  jsonApplyDiff: function (a,diff) {
-    var ret = util.jsonClone(a);
+  applyDiff: function (a,diff) {
+    var ret = json.clone(a);
     for (var k0 in diff) {
       var pre = k0[0];
       var k = k0.substr(1);
@@ -60,7 +60,7 @@ var util = {
           if (typeof ret[k] !== 'undefined') delete ret[k];
           break;
         case '*':
-          ret[k] = util.jsonApplyDiff (a[k], diff[k0]);
+          ret[k] = json.applyDiff (a[k], diff[k0]);
           break;
       }
     }
@@ -68,4 +68,4 @@ var util = {
   }
 };
 
-module.exports = util;
+module.exports = json;

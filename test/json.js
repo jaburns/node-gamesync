@@ -1,7 +1,7 @@
 'use strict'
 
 var assert = require('assert');
-var util = require('../server/util');
+var json = require('../shared/json');
 
 var obj1 = {
   'someArray': [1,2,3],
@@ -35,17 +35,17 @@ var obj2 = {
   'newProperty': 'hi'
 };
 
-describe('util', function(){
-  describe('#jsonLerp()', function(){
-    var halfLerp = util.jsonLerp(obj1,obj2,0.5);
+describe('json', function(){
+  describe('#lerp()', function(){
+    var halfLerp = json.lerp(obj1,obj2,0.5);
 
     function closeTo (a,b) {
       return Math.abs(a-b) < 1e-9;
     }
 
     it('should clamp on first or last value',function(){
-      assert.equal (util.jsonLerp(obj1,obj2,-0.01), obj1);
-      assert.equal (util.jsonLerp(obj1,obj2, 1.01), obj2);
+      assert.equal (json.lerp(obj1,obj2,-0.01), obj1);
+      assert.equal (json.lerp(obj1,obj2, 1.01), obj2);
     });
 
     it('should lerp numbers',function(){
@@ -61,10 +61,10 @@ describe('util', function(){
     });
   });
 
-  describe('#jsonApplyDiff()',function(){
+  describe('#applyDiff()',function(){
     it('should be able to apply the result of jsonDiff',function(){
-      var diff = util.jsonDiff(obj1,obj2);
-      assert(util.jsonEqual(util.jsonApplyDiff(obj1,diff),obj2));
+      var diff = json.diff(obj1,obj2);
+      assert(json.equal(json.applyDiff(obj1,diff),obj2));
     });
   });
-}):
+});

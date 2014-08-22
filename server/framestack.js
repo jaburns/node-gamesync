@@ -3,7 +3,7 @@
 var MAX_FRAMES = 30; // TODO this values needs to be determined by measuring the ping of the clients.
 var NTH_FRAME = 10;
 
-var util = require('./util');
+var json = require('../shared/json');
 
 /**
  * This structure represents a single frame of gameplay.  The properties of this
@@ -26,8 +26,8 @@ function Frame (state, inputs, time) {
  */
 Frame.prototype.clone = function () {
   return new Frame (
-    util.jsonClone (this.state),
-    util.jsonClone (this.inputs),
+    json.clone (this.state),
+    json.clone (this.inputs),
     this.time
   );
 }
@@ -91,7 +91,7 @@ FrameStack.prototype.step = function () {
     }
     while (i > 0) {
       this._frames[i-1] = new Frame (
-        this._game.step (util.jsonClone (this._frames[i].inputs), util.jsonClone (this._frames[i].state)),
+        this._game.step (json.clone (this._frames[i].inputs), json.clone (this._frames[i].state)),
         this._frames[i-1].inputs,
         this._frames[i].time + 1
       );
@@ -119,8 +119,8 @@ FrameStack.prototype.step = function () {
 
   // Simulate the next frame, cloning the previous input state.
   this._frames.unshift (new Frame (
-    this._game.step (util.jsonClone (this._frames[0].inputs), util.jsonClone (this._frames[0].state)),
-    util.jsonClone (this._frames[0].inputs),
+    this._game.step (json.clone (this._frames[0].inputs), json.clone (this._frames[0].state)),
+    json.clone (this._frames[0].inputs),
     this._frames[0].time + 1
   ));
   if (this._frames.length > MAX_FRAMES) {
