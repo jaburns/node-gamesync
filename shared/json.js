@@ -1,7 +1,5 @@
 'use strict';
 
-var lerp_
-
 var json = {
   clone: function (a) {
     return JSON.parse (JSON.stringify (a));
