@@ -55,7 +55,7 @@
             frame.time++;
           }
 
-          render (frame.state);
+          render (frame.state,inputId);
 
           // TODO Replace magic number with science number
           if (storedInputs.length > 50) storedInputs.pop ();
