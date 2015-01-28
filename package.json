@@ -1,28 +1,28 @@
 {
-  "name": "gamesync",
-  "version": "0.0.1",
-  "description": "Generic lag compensation and client-side prediction engine for multiplayer javascript games.",
-  "author": {
-    "name": "Jeremy Burns",
-    "email": "j@jaburns.net"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jaburns/node-gamesync.git"
-  },
-  "bugs": {
-    "url": "https://github.com/jaburns/node-gamesync/issues"
-  },
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/jaburns/node-gamesync/blob/master/LICENSE"
-  },
-  "dependencies": {
-    "socket.io": "1.0.x",
-    "browserify": "5.10.x"
-  },
-  "scripts": {
-    "postinstall": "node install"
-  }
+    "name": "gamesync",
+    "version": "0.0.1",
+    "description": "Generic lag compensation and client-side prediction engine for multiplayer javascript games.",
+    "author": {
+        "name": "Jeremy Burns",
+        "email": "j@jaburns.net"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jaburns/node-gamesync.git"
+    },
+    "bugs": {
+        "url": "https://github.com/jaburns/node-gamesync/issues"
+    },
+    "license": {
+        "type": "MIT",
+        "url": "https://github.com/jaburns/node-gamesync/blob/master/LICENSE"
+    },
+    "dependencies": {
+        "socket.io": "1.0.x",
+        "browserify": "5.10.x"
+    },
+    "scripts": {
+        "postinstall": "node install"
+    }
 }
 

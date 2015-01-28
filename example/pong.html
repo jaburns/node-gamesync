@@ -15,87 +15,87 @@
 // ----- input ----------------------------------------------------------------
 
 var getInput = (function(){
-  var keyCodes = { left: 37, right: 39 };
-  var keys = {};
-  var dirty = false;
-  var randPressing = false;
+    var keyCodes = { left: 37, right: 39 };
+    var keys = {};
+    var dirty = false;
+    var randPressing = false;
 
-  function randSwitchInput () {
-    if (randPressing) {
-      randPressing = false;
-      keys = {};
-      dirty = true;
-    } else {
-      randPressing = true;
-      keys[Math.random() > 0.5 ? keyCodes.left : keyCodes.right] = true;
-      dirty = true;
-    }
-    setTimeout (randSwitchInput, 100+Math.round(Math.random()*500));
-  }
-
-  if (window.location.hash === "#random") {
-    randSwitchInput ();
-  }
-  else {
-    window.onkeydown = function (e) {
-      if (! e.keyCode in keyCodes) return;
-      if (! keys [e.keyCode]) {
-        keys [e.keyCode] = true;
-        dirty = true;
-      }
+    function randSwitchInput () {
+        if (randPressing) {
+            randPressing = false;
+            keys = {};
+            dirty = true;
+        } else {
+            randPressing = true;
+            keys[Math.random() > 0.5 ? keyCodes.left : keyCodes.right] = true;
+            dirty = true;
+        }
+        setTimeout (randSwitchInput, 100+Math.round(Math.random()*500));
     }
 
-    window.onkeyup = function (e) {
-      if (! e.keyCode in keyCodes) return;
-      if (keys [e.keyCode]) {
-        delete keys [e.keyCode];
-        dirty = true;
-      }
+    if (window.location.hash === "#random") {
+        randSwitchInput ();
     }
-  }
+    else {
+        window.onkeydown = function (e) {
+            if (! e.keyCode in keyCodes) return;
+            if (! keys [e.keyCode]) {
+                keys [e.keyCode] = true;
+                dirty = true;
+            }
+        }
 
-  return function () {
-    if (dirty) {
-      dirty = false;
-      return { paddle:
-          keys[keyCodes.left] ? -1
-        : keys[keyCodes.right] ? 1
-        : 0 };
+        window.onkeyup = function (e) {
+            if (! e.keyCode in keyCodes) return;
+            if (keys [e.keyCode]) {
+                delete keys [e.keyCode];
+                dirty = true;
+            }
+        }
     }
-    return null;
-  }
+
+    return function () {
+        if (dirty) {
+            dirty = false;
+            return { paddle:
+                    keys[keyCodes.left] ? -1
+                : keys[keyCodes.right] ? 1
+                : 0 };
+        }
+        return null;
+    }
 })();
 
 // ----- view -----------------------------------------------------------------
 
 var render = (function(){
-  var WIDTH = 640, HEIGHT = 300;
-  var WIDTH2 = WIDTH/2, HEIGHT2 = HEIGHT/2;
+    var WIDTH = 640, HEIGHT = 300;
+    var WIDTH2 = WIDTH/2, HEIGHT2 = HEIGHT/2;
 
-  var ctx = document.getElementById('paper').getContext('2d');
-  var scoreHeader = document.getElementById('score');
-  var fg = '#FFF', bg = '#000';
+    var ctx = document.getElementById('paper').getContext('2d');
+    var scoreHeader = document.getElementById('score');
+    var fg = '#FFF', bg = '#000';
 
-  function drawBall (ball) {
-    ctx.fillStyle = fg;
-    ctx.fillRect (WIDTH2+WIDTH2*ball.x-3,
-                  HEIGHT2+HEIGHT2*ball.y-3, 6, 6);
-  }
+    function drawBall (ball) {
+        ctx.fillStyle = fg;
+        ctx.fillRect (WIDTH2+WIDTH2*ball.x-3,
+                                    HEIGHT2+HEIGHT2*ball.y-3, 6, 6);
+    }
 
-  function drawPaddle (x, y) {
-    ctx.fillStyle = fg;
-    ctx.fillRect (WIDTH2+WIDTH2*x-0.1*WIDTH2,
-                  HEIGHT2+HEIGHT2*y-3,0.1*WIDTH, 6);
-  }
+    function drawPaddle (x, y) {
+        ctx.fillStyle = fg;
+        ctx.fillRect (WIDTH2+WIDTH2*x-0.1*WIDTH2,
+                                    HEIGHT2+HEIGHT2*y-3,0.1*WIDTH, 6);
+    }
 
-  return function (state) {
-    ctx.fillStyle = bg;
-    ctx.fillRect (0, 0, WIDTH, HEIGHT);
-    drawBall (state.ball);
-    drawPaddle (state.paddles[0], -0.9);
-    drawPaddle (state.paddles[1],  0.9);
-    scoreHeader.innerHTML = 'Score: '+state.score[0]+' - '+state.score[1];
-  }
+    return function (state) {
+        ctx.fillStyle = bg;
+        ctx.fillRect (0, 0, WIDTH, HEIGHT);
+        drawBall (state.ball);
+        drawPaddle (state.paddles[0], -0.9);
+        drawPaddle (state.paddles[1],    0.9);
+        scoreHeader.innerHTML = 'Score: '+state.score[0]+' - '+state.score[1];
+    }
 })();
 
 // ----------------------------------------------------------------------------
