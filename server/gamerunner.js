@@ -57,7 +57,7 @@ GameRunner.prototype._step = function () {
 
 GameRunner.prototype._sendState = function (state) {
     for (var i = 0; i < this._clientSockets.length; ++i) {
-        this._clientSockets[i].json.send (state);
+        this._clientSockets[i].json.volatile.send (state);
     }
 }
 
