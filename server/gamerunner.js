@@ -20,6 +20,7 @@ GameRunner.prototype.removeClientSocket = function (socket) {
     }
     if (this._clientSockets.length < 1) {
         clearInterval (this._stepInterval);
+        this._stepInterval = -1;
     }
 }
 
