@@ -15,9 +15,11 @@ function GameRunner (game, lag) {
 
 GameRunner.prototype.removeClientSocket = function (socket) {
     var index = this._clientSockets.indexOf (socket);
-    if (index >= 0) {
-        this._clientSockets.splice (index, 1);
-    }
+    if (index < 0) return;
+
+    this._clientSockets.splice (index, 1);
+    this._frameStack.removeInput (socket.id);
+
     if (this._clientSockets.length < 1) {
         clearInterval (this._stepInterval);
         this._stepInterval = -1;
@@ -29,18 +31,18 @@ GameRunner.prototype.addClientSocket = function (socket) {
     if (this._clientSockets.indexOf (socket) >= 0) return null;
     this._clientSockets.push (socket);
 
-    var firstInput = this._game.defaultInput;
-    var playerId = this._frameStack.pushInput (firstInput);
+    this._frameStack.pushInput (this._game.defaultInput, socket.id);
 
     if (this._stepInterval < 0) {
         this._stepInterval = setInterval (this._step.bind(this), this._game.dt);
     }
 
-    socket.json.send ({'notifyInputId': playerId});
+    // TODO Check if we can just use the socket id on the client instead of passing it in a message.
+    socket.json.send ({'notifyInputId': socket.id});
 
     return {
         acceptInput: function (time, input) {
-            this._frameStack.input (time, playerId, input);
+            this._frameStack.input (time, socket.id, input);
         }.bind (this)
     };
 }

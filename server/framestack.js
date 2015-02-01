@@ -48,13 +48,17 @@ function FrameStack (game) {
 }
 
 /**
- * Adds a new input to the FrameStack at the current frame. A unique player ID
- * is attached to it and returned.
+ * Adds a new input to the FrameStack at the current frame with a provided id.
  */
-FrameStack.prototype.pushInput = function (input) {
-    var id = Math.random().toString().substr(2);
+FrameStack.prototype.pushInput = function (input, id) {
     this._frames[0].inputs[id] = input;
-    return id;
+}
+
+/**
+ * Removes input from the game at the current frame.
+ */
+FrameStack.prototype.removeInput = function (id) {
+    delete this._frames[0].inputs[id];
 }
 
 /**
