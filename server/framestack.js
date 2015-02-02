@@ -44,7 +44,7 @@ Frame.prototype.clone = function () {
 function FrameStack (game) {
     this._game = game;
     this._oldestModifiedInput = -1;
-    this._frames = [new Frame (game.initialState, {}, 0)];
+    this._frames = [new Frame (game.initialState(Math.random()), {}, 0)];
 }
 
 /**

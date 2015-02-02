@@ -16,10 +16,12 @@ var game = (function () {
         dt: 33,
         players: 2,
 
-        initialState: {
-            paddles: [0, 0],
-            score: [0, 0],
-            ball: {x:0, y:0, vx:0.03, vy:0.025}
+        initialState: function(seed) {
+            return {
+                paddles: [0, 0],
+                score: [0, 0],
+                ball: {x:0, y:0, vx:0.03, vy:0.025}
+            };
         },
 
         defaultInput: {
