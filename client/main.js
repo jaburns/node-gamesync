@@ -5,10 +5,10 @@ window.gamesync = gamesync;
 
 gamesync.json = require('../shared/json');
 
-gamesync.runGame = function (game, render, getInput, renderLag) {
-    var socket = io.connect (document.URL);
+gamesync.runGame = function (game, render, getInput, url, renderLag) {
+    var socket = io(url || document.URL);
 
-    if (typeof renderLag === 'undefined') renderLag = 0;
+    renderLag = renderLag || 0;
 
     socket.on ('connect', function () {
         var inputId = null;
