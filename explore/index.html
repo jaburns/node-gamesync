@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body { background: #fff; }
+        #paper { background: #ccc; }
+    </style>
+    <body>
+        <canvas id="paper" width="800" height="600"></canvas>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        var socket = io();
+        var ctx = document.getElementById('paper').getContext('2d');
+
+        var localTime = 0;
+        var inputBuffer = {};
+
+        window.onkeyup   = function(e) { delete inputBuffer[e.keyCode]; }
+        window.onkeydown = function(e) { inputBuffer[e.keyCode] = true; }
+        socket.on('msg state', update);
+
+        function update(remoteState) {
+            socket.emit('msg input', inputBuffer);
+            render(remoteState);
+            localTime++;
+        }
+
+        function render(state) {
+            ctx.canvas.width = ctx.canvas.width;
+            ctx.fillStyle = '#000';
+            for (var k in state.players) {
+                ctx.fillRect(state.players[k].x, state.players[k].y, 10, 10);
+            }
+        }
+
+    </script>
+</html>
