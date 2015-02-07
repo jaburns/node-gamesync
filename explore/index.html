@@ -8,6 +8,7 @@
         <canvas id="paper" width="800" height="600"></canvas>
     </body>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/shared.js"></script>
     <script>
 
         var socket = io();
@@ -16,18 +17,27 @@
         var localTime = 0;
         var inputBuffer = {};
 
+        var localPlayer = null;
+
         window.onkeyup   = function(e) { delete inputBuffer[e.keyCode]; }
         window.onkeydown = function(e) { inputBuffer[e.keyCode] = true; }
         socket.on('msg state', update);
 
         function update(remoteState) {
+            if (localPlayer === null) {
+                localPlayer = JSON.parse(JSON.stringify(remoteState.players[socket.id]));
+                console.log(localPlayer);
+            }
             socket.emit('msg input', inputBuffer);
+            shared.stepPlayer(localPlayer, inputBuffer);
             render(remoteState);
             localTime++;
         }
 
         function render(state) {
             ctx.canvas.width = ctx.canvas.width;
+            ctx.fillStyle = '#444';
+            ctx.fillRect(localPlayer.x, localPlayer.y, 10, 10);
             ctx.fillStyle = '#000';
             for (var k in state.players) {
                 ctx.fillRect(state.players[k].x, state.players[k].y, 10, 10);

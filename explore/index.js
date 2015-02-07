@@ -1,28 +1,13 @@
-var FILES = [ '/pong.html', '/pong.js' ];
-
-var lag = process.argv.length > 2
-        ? parseInt (process.argv[2])
-        : 0;
-
-var server = require('http').createServer(handler);
-var fs = require ('fs');
-
-function handler(req, res) {
-    fs.readFile(__dirname+'/index.html', function(err, data) {
-        res.writeHead(200); return res.end(data);
-    });
-}
-
-var game = require ('./pong');
-require ('..').run (server, game, lag);
-server.listen (PORT);
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 1337;
+app.use(express.static(__dirname));
 app.get('/', function(req, res) { res.sendFile(__dirname + '/index.html'); });
 http.listen(port, function() { console.log('Listening on ' + port); });
 
+var shared = require('./shared');
 
 
 var INCOMING_LAG = 120;
@@ -47,7 +32,7 @@ function newPlayer () {
 
 function handleInput(id, inputBuffer) {
     if (state.players[id]) {
-        state.players[id].latestInput = inputBuffer;
+       state.players[id].latestInput = inputBuffer;
     }
 }
 
@@ -78,10 +63,7 @@ setInterval(function() {
 
     for (var k in state.players) {
         var p = state.players[k];
-        p.x += p.latestInput['37'] ? -10 : 0;
-        p.y += p.latestInput['38'] ? -10 : 0;
-        p.x += p.latestInput['39'] ?  10 : 0;
-        p.y += p.latestInput['40'] ?  10 : 0;
+        shared.stepPlayer(p, p.latestInput);
     }
 
     var stateNow = JSON.parse(JSON.stringify(state));
